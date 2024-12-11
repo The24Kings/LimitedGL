@@ -1,6 +1,5 @@
-#pragma once
-#ifndef COMPLILE_SHADERS_HPP
-#define COMPLILE_SHADERS_HPP
+#ifndef _COMPLILE_SHADERS_HPP
+#define _COMPLILE_SHADERS_HPP
 
 #include <GLEW/glew.h>
 #include <stdio.h>
@@ -130,4 +129,4 @@ static shader_program* create_shader_program(shader_source* sources, size_t sour
 	return program;
 }
 
-#endif // COMPLILE_SHADERS_HPP
+#endif // _COMPLILE_SHADERS_HPP

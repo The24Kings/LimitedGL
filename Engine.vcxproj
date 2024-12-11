@@ -147,11 +147,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="libs\tiny_obj_loader.h" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\tiny_object_loader.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\compile_shaders.hpp" />
+    <ClInclude Include="libs\game_data.hpp" />
+    <ClInclude Include="libs\loader.hpp" />
     <ClInclude Include="libs\scolor.hpp" />
+    <ClInclude Include="libs\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\fragment_shader.glsl" />
