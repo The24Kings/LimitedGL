@@ -17,8 +17,14 @@ struct shader_source {
 
 struct shader_program {
 	GLuint handle;
-	shader_source* sources;
-	size_t source_count;
+	shader_source* sources[5]; // 5 is the max number of shaders in a program; vertex, tessellation control, tessellation evaluation, geometry, fragment
+
+	shader_program() {
+		handle = 0;
+		for (size_t i = 0; i < 5; i++) {
+			sources[i] = 0;
+		}
+	}
 };
 
 /*
@@ -85,6 +91,10 @@ static shader_source* create_shader_source(GLuint type, const char* source) {
 	uint64_t file_size = 0;
 	char* buffer = NULL;
 
+	if (source == NULL) {
+		return nullptr;
+	}
+
 	if (shader == NULL) {
 		fprintf(stderr, RED("Failed to allocate memory for shader_source\n").c_str());
 		return nullptr;
@@ -113,36 +123,46 @@ static shader_source* create_shader_source(GLuint type, const char* source) {
 	shader->type = type;
 	shader->source = source;
 
-	free(buffer); // Free the buffer
-
 	return shader;
 }
 
-static shader_program* create_shader_program(shader_source* sources, size_t source_count) {
-	shader_program* program = new shader_program(); // Allocate memory for the shader program
-
-	unsigned int program_handle = glCreateProgram(); // Create the shader program
-
-	// Attach the shaders to the program
-	for (size_t i = 0; i < source_count; i++) {
-		shader_source* source = &sources[i];
-		glAttachShader(program_handle, source->handle);
+static shader_program* create_shader_program(const char* v_file, const char* tcs_file, const char* tes_file, const char* g_file, const char* f_file) {
+	// Compile the shaders
+	if (!v_file || !f_file) {
+		fprintf(stderr, RED("Vertex and Fragment shaders are required\n").c_str());
+		return nullptr;
 	}
 
-	glLinkProgram(program_handle);
+	shader_source* vertex_shader = create_shader_source(GL_VERTEX_SHADER, v_file);
+	shader_source* tess_control_shader = create_shader_source(GL_TESS_CONTROL_SHADER, tcs_file);
+	shader_source* tess_eval_shader = create_shader_source(GL_TESS_EVALUATION_SHADER, tes_file);
+	shader_source* geometry_shader = create_shader_source(GL_GEOMETRY_SHADER, g_file);
+	shader_source* fragment_shader = create_shader_source(GL_FRAGMENT_SHADER, f_file);
 
-	// Validate the program
-	GLint isLinked = 0;
-	glGetProgramiv(program_handle, GL_LINK_STATUS, &isLinked);
+	// Create the shader program
+    shader_program* program = new shader_program(); // Allocate memory for the shader program
+    GLuint program_handle = glCreateProgram(); // Create the shader program
 
-	if (isLinked) { puts(GREEN("Link Success").c_str()); }
-	else { puts(RED("Link Failed").c_str()); return nullptr; } // Return null if the program failed to link
+    // Attach the shaders to the program
+	if (vertex_shader) { glAttachShader(program_handle, vertex_shader->handle); }
+	if (tess_control_shader) { glAttachShader(program_handle, tess_control_shader->handle); }
+	if (tess_eval_shader) { glAttachShader(program_handle, tess_eval_shader->handle); }
+	if (geometry_shader) { glAttachShader(program_handle, geometry_shader->handle); }
+	if (fragment_shader) { glAttachShader(program_handle, fragment_shader->handle); }
 
-	program->handle = program_handle;
-	program->sources = sources;
-	program->source_count = source_count;
+	// Link the program
+	glLinkProgram(program_handle); 
 
-	return program;
+    // Validate the program
+    GLint isLinked = 0;
+    glGetProgramiv(program_handle, GL_LINK_STATUS, &isLinked);
+
+    if (isLinked) { puts(GREEN("Link Success").c_str()); }
+    else { puts(RED("Link Failed").c_str()); return nullptr; } // Return null if the program failed to link
+
+    program->handle = program_handle;
+
+    return program;
 }
 
 #endif // _COMPLILE_SHADERS_HPP
