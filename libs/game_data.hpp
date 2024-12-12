@@ -2,7 +2,11 @@
 #define _GAME_DATA_HPP
 
 #include <glm/glm.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <GLEW/glew.h>
+#include <vector>
 
 struct vertex { // 32 bytes: texCoords is 24 bytes offset into the struct
 	glm::vec3 pos;
@@ -14,6 +18,25 @@ struct vertex { // 32 bytes: texCoords is 24 bytes offset into the struct
 	}
 };
 
+struct texture {
+	const char* filename;
+	unsigned char* image_data; // (Using STB Image) Texture buffer: size = width * height * 4 (RGBA)
+	GLuint texture_handle;
+	GLint width, height;
+};
+
+struct material {
+	texture* texture[32];
+	size_t texture_count; // Important to know how many textures are in the array (I never have any luck with sizeof)
+	float ambient, diffuse, specular, shininess;
+};
+
+struct obj_mesh {
+	std::vector<vertex> vertices;
+	std::vector<uint32_t> indices;
+	material mat;
+};
+
 // ((vec3 ^ vec3 << 1) >> 1) ^ (vec2 << 1)
 template<> struct std::hash<vertex> { // Hash function for vertex struct
 	size_t operator()(vertex const& v) const {
@@ -21,7 +44,35 @@ template<> struct std::hash<vertex> { // Hash function for vertex struct
 	}
 };
 
-int load_obj(const char* baseDir, const char* filename, std::vector<vertex> vertices, std::vector<uint32_t> indices, glm::vec2& texScale);
-unsigned load_texture(const char* filename);
+int load_obj(const char* baseDir, const char* filename, obj_mesh &mesh);
+void load_texture(const char* filename, texture &tex);
+
+struct model_data {
+	// Model data for drawing
+	glm::vec3 pos;
+	glm::quat rot;
+	glm::vec3 scale;
+
+	// Start position, rotation, and scale for animations
+	glm::vec3 start_pos;
+	glm::quat start_rot;
+	glm::vec3 start_scale;
+};
+
+// Object Data
+class obj_data {
+public:
+	GLuint program, mvp_uniform, models_buf, v_attr, t_attr, c_attr, v_buf, c_buf, e_buf; // model view projection uniform, models buffer, vertex attribute, texture attribute, color attribute, vertex buffer, color buffer, element buffer, texture
+	std::vector<model_data> models;
+	obj_mesh mesh;
+
+	virtual int init() { return 0; }
+	virtual void draw(glm::mat4 vp) {}
+	virtual void deinit() {}
+	virtual void add(glm::vec3 pos, glm::quat rot, glm::vec3 scale) { models.push_back({ pos, rot, scale, pos, rot, scale }); }
+
+	virtual void move(double dt) {}
+	virtual void animate(double dt) {}
+};
 
 #endif // _GAME_DATA_HPP

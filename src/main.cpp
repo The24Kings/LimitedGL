@@ -8,11 +8,24 @@
 #include <glfw/glfw3.h>
 #include <inttypes.h>
 #include <stdio.h>
+#include <vector>
+#include <thread>
+#include <chrono>
+
+#define _USE_MATH_DEFINES
+#include<math.h>
 
 #include "compile_shaders.hpp"
+#include "game_data.hpp"
+
+#include "base_objects.hpp"
 
 float width = 1280;
 float height = 720;
+
+double fps = 0.0;
+double target_fps = 60.0;
+double deltaTime = 0.0;
 
 static void resize_callback(GLFWwindow* window, int width, int height);
 
@@ -39,56 +52,57 @@ int main(void) {
     /* Callbacks */
     glfwSetFramebufferSizeCallback(window, resize_callback);
 
-	float triangle[] { // Triangle Vertices TEST
-        0, 0, 0, 
-        0, 1, 0, 
-        1, 1, 0 
-    };
+    /* Objects */
+	std::vector<obj_data*> objects;
 
-	// Create Objects for OpenGL
-	uint32_t vao; // Vertex Array Object Handle
-    glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	loaded_obj obj = loaded_obj("objects/cube.obj", "objects/", 1, "objects/textures/brick.jpg");
+	obj.add(glm::vec3(0.0f, 0.0f, 10.0f), glm::quat(1.0f, 0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	uint32_t vbo; // Vertex Buffer Object Handle
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
+	objects.push_back(&obj);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	/* Initialize objects */
+	for (obj_data* obj : objects) {
+        if (obj->init()) {
+			puts(RED("Failed to init objects").c_str());
 
-	// Make Shader
-	shader_source* vertex_shader = create_shader_source(GL_VERTEX_SHADER, "shaders/vertex_shader.glsl");
-	shader_source* fragment_shader = create_shader_source(GL_FRAGMENT_SHADER, "shaders/fragment_shader.glsl");
-
-	// For Debugging
-	if (vertex_shader == NULL || fragment_shader == NULL) {
-		return -1;
+			return 1;
+		}
 	}
-
-	shader_source sources[] = { *vertex_shader, *fragment_shader };
-
-	// Make Program
-	shader_program* program = create_shader_program(sources, 2);
 
     /* Loop until the user closes the window */
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window)) {
+		auto start = std::chrono::high_resolution_clock::now();
+
         /* Poll for and process events */
         glfwPollEvents();
         glClearColor(0, 0, 0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_DEPTH_BUFFER_BIT);
 
-		// Draw Triangle
-		glUseProgram(program->handle);
+        // Get the view and projection matrices
+        glm::vec3 global_up(0, 1, 0);
 
-        glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+        glm::vec3 look_at_point = glm::vec3(0.0f, 0.0f, 0.0f) + glm::vec3(cosf(0) * sinf(M_PI), sinf(0), cosf(0) * cosf(M_PI));
+        glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), look_at_point, global_up);
+        glm::mat4 projection = glm::perspective(45.0f, width / height, 0.1f, 1000.0f);
+        glm::mat4 vp = projection * view;
+
+		for (obj_data* obj : objects) {
+			obj->draw(vp); //FIXME: Nothing is drawn/ the color is black
+		}
 
 		/* Swap front and back buffers */
         glfwSwapBuffers(window);
+
+		auto end = std::chrono::high_resolution_clock::now();
+		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+		fps = 1000.0 / (double)elapsed.count();
+		deltaTime = (target_fps / fps) > 1 ? 1 : (target_fps / fps); // Cap the delta time to 1
+
+		// Use the delta time to limit the frame rate
+		std::this_thread::sleep_for(std::chrono::milliseconds((int)(1000.0 / target_fps - fps))); // TODO: Look into to make sure this is accurate
     }
 
     glfwDestroyWindow(window);

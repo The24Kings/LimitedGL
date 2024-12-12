@@ -4,6 +4,7 @@
 #include <vector>
 #include <stdexcept>
 
+#include "scolor.hpp"
 #include "stb_image.h"
 #include "tiny_obj_loader.h"
 #include "game_data.hpp"
@@ -19,7 +20,7 @@
  *
  * @return 0 if successful, 1 if not
  */
-int load_obj(const char* baseDir, const char* filename, std::vector<vertex> vertices, std::vector<uint32_t> indices, glm::vec2& texScale) {
+int load_obj(const char* baseDir, const char* filename, obj_mesh &mesh) {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -40,7 +41,7 @@ int load_obj(const char* baseDir, const char* filename, std::vector<vertex> vert
 
 	// Load the obj file
 	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, filename, baseDirStr.c_str())) {
-		throw std::runtime_error(warn + err);
+		throw std::runtime_error(err);
 
 		return 1;
 	}
@@ -63,30 +64,22 @@ int load_obj(const char* baseDir, const char* filename, std::vector<vertex> vert
 			};
 
 			vert.texCoord = {
-				attrib.texcoords[2 * index.texcoord_index + 0] * texScale.x,
-				1.0f - attrib.texcoords[2 * index.texcoord_index + 1] * texScale.y // Flip the texture (because stb_image.h flips it)
+				attrib.texcoords[2 * index.texcoord_index + 0],
+				1.0f - attrib.texcoords[2 * index.texcoord_index + 1] // Flip the texture (because stb_image.h flips it)
 			};
 
-			vertices.push_back(vert);
-			indices.push_back(indices.size());
+			mesh.vertices.push_back(vert);
+			mesh.indices.push_back(mesh.indices.size());
 		}
 	}
 
 	// Print the obj file
+	printf(GREEN("\nLoaded obj: %s\n").c_str(), filename);
 	printf("# of vertices  = %d\n", (int)(attrib.vertices.size()) / 3);
 	printf("# of normals   = %d\n", (int)(attrib.normals.size()) / 3);
 	printf("# of texcoords = %d\n", (int)(attrib.texcoords.size()) / 2);
 	printf("# of materials = %d\n", (int)materials.size());
 	printf("# of shapes    = %d\n", (int)shapes.size());
-
-	// Append `default` material
-	materials.push_back(tinyobj::material_t());
-
-	// Test for diffuse textures (Will remove later)
-	for (size_t i = 0; i < materials.size(); i++) {
-		printf("material[%d].diffuse_texname = %s\n", int(i),
-			materials[i].diffuse_texname.c_str());
-	}
 
 	return 0;
 }
@@ -95,30 +88,33 @@ int load_obj(const char* baseDir, const char* filename, std::vector<vertex> vert
  * Load a texture into the GPU
  *
  * @param filename The name of the texture file
- *
- * @return The texture ID
+ * @param tex The texture object
  */
-unsigned load_texture(const char* filename) {
-	unsigned texture = NULL;
-	int texWidth, texHeight;
+void load_texture(const char* filename, texture &tex) {
+	// Set the filename
+	tex.filename = filename;
 
 	// Load the image
-	unsigned char* image_data = stbi_load(filename, &texWidth, &texHeight, 0, STBI_rgb_alpha);
+	tex.image_data = stbi_load(filename, &tex.width, &tex.height, 0, STBI_rgb_alpha);
 
-	if (!image_data) {
-		printf("Failed to load texture %s\n", filename);
+	if (!tex.image_data) {
+		printf(RED("Failed to load texture '%s'\n").c_str(), filename);
 
-		return texture;
+		return;
 	}
 
-	printf("Loaded texture %d by %d\n", texWidth, texHeight);
+	printf(GREEN("Loaded texture: '%s' - %d by %d\n").c_str(), filename, tex.width, tex.height);
 
 	// Bind the texture to the GPU
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
-	free(image_data);
+	glGenTextures(1, &tex.texture_handle);
+	glBindTexture(GL_TEXTURE_2D, tex.texture_handle);
 
-	return texture;
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.image_data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_WRAP_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_WRAP_BORDER);
+
+	free(tex.image_data); // Free the image data (we don't need it anymore)
 }
