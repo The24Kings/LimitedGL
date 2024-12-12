@@ -6,7 +6,7 @@
 
 #include "scolor.hpp"
 
-#define BUFFER_SIZE 1024
+constexpr auto BUFFER_SIZE = 1024;
 
 struct shader_source {
 	GLenum handle;
@@ -27,55 +27,73 @@ struct shader_program {
 	Store the shader program in a hash table with the handle and the number of sources
 */
 
-static void read_shader(char* buffer, const char* filename) { //TODO: change this to some kind of compiler to read #include statements in the shader
+static bool read_shader(char** buffer, const char* filename) { //TODO: change this to some kind of compiler to read #include statements in the shader
 	// Read in the shader source from a file
-	FILE* file;
-	size_t readlen;
+	FILE* file = NULL;
+	uint64_t file_size = 0;
+	size_t readlen = 0;
+	char* temp_buffer = NULL;
 
 	fopen_s(&file, filename, "r");
 
 	if (file == NULL) {
 		fprintf(stderr, RED("Failed to open file %s\n").c_str(), filename);
-		return;
+		return false;
 	}
 
-	readlen = fread(buffer, sizeof(char), BUFFER_SIZE, file);
+	// Allocate memory for the buffer
+	fseek(file, 0, SEEK_END);
+	file_size = ftell(file);
+	rewind(file);
 
+	// Check if file size is over 1MB
+	if (file_size > (uint64_t)(1024 * 1024)) {
+		fprintf(stderr, RED("File %s is too large (Larger than 1MB)\n").c_str(), filename);
+		return false;
+	}
+
+	temp_buffer = (char*)malloc(file_size);
+
+	if (temp_buffer == NULL) {
+		fprintf(stderr, RED("Failed to allocate memory for buffer\n").c_str());
+		return false;
+	}
+
+	// Read the file into the buffer
+	readlen = fread(temp_buffer, 1, file_size, file);
+
+	// Check if the file was read successfully
 	if (readlen == 0) {
 		fprintf(stderr, RED("Failed to read file %s\n").c_str(), filename);
-		return;
+		return false;
 	}
 
-	if (readlen == BUFFER_SIZE) {
-		fprintf(stderr, RED("Buffer too small for file %s\n").c_str(), filename);
-		return;
-	}
+	temp_buffer[readlen] = '\0'; // Null terminate the buffer
 
-	// Null terminate the buffer
-	buffer[readlen] = 0;
+	printf("Read %zu bytes from %s\n", readlen, filename);
+	puts(temp_buffer);
 
-	// Print the shader source
-	printf("\nRead in shader source from %s (%zu bytes):\n", filename, readlen);
-	puts(buffer);
+	*buffer = temp_buffer; // Set the buffer
 
 	fclose(file);
+
+	return true;
 }
 
 static shader_source* create_shader_source(GLuint type, const char* source) {
-	shader_source* shader = (shader_source*)malloc(sizeof(shader_source)); // Allocate memory for the shader
-	char* buffer = (char*)malloc(BUFFER_SIZE); // Allocate memory for the shader source
+	shader_source* shader = new shader_source(); // Allocate memory for the shader
+	uint64_t file_size = 0;
+	char* buffer = NULL;
 
 	if (shader == NULL) {
 		fprintf(stderr, RED("Failed to allocate memory for shader_source\n").c_str());
-		return NULL;
+		return nullptr;
 	}
 
-	if (buffer == NULL) {
-		fprintf(stderr, RED("Failed to allocate memory for buffer\n").c_str());
-		return NULL;
+	if (!read_shader(&buffer, source)) { // Read the shader source from the file
+		printf(RED("Failed to read shader source from %s\n").c_str(), source);
+		return nullptr;
 	}
-
-	read_shader(buffer, source); // Read the shader source from the file
 
 	// Create the shader
 	unsigned int handle = glCreateShader(type);
@@ -90,20 +108,18 @@ static shader_source* create_shader_source(GLuint type, const char* source) {
 	if (success) { puts(GREEN("Compile Success").c_str()); }
 	else { puts(RED("Compile Failed").c_str()); return nullptr; } // Return null if the shader failed to compile
 
+	// Set the shader properties
 	shader->handle = handle;
 	shader->type = type;
 	shader->source = source;
+
+	free(buffer); // Free the buffer
 
 	return shader;
 }
 
 static shader_program* create_shader_program(shader_source* sources, size_t source_count) {
-	shader_program* program = (shader_program*)malloc(sizeof(shader_program)); // Allocate memory for the shader program
-
-	if (program == NULL) {
-		fprintf(stderr, RED("Failed to allocate memory for shader_program\n").c_str());
-		return NULL;
-	}
+	shader_program* program = new shader_program(); // Allocate memory for the shader program
 
 	unsigned int program_handle = glCreateProgram(); // Create the shader program
 

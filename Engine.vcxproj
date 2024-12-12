@@ -154,7 +154,7 @@
   <ItemGroup>
     <ClInclude Include="libs\compile_shaders.hpp" />
     <ClInclude Include="libs\game_data.hpp" />
-    <ClInclude Include="libs\loader.hpp" />
+    <ClInclude Include="src\loader.cpp" />
     <ClInclude Include="libs\scolor.hpp" />
     <ClInclude Include="libs\stb_image.h" />
   </ItemGroup>

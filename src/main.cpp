@@ -24,10 +24,11 @@ int main(void) {
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(width, height, "LimitedGL Engine", NULL, NULL);
 
     if (!window) {
         glfwTerminate();
+
         return -1;
     }
 
@@ -60,6 +61,11 @@ int main(void) {
 	// Make Shader
 	shader_source* vertex_shader = create_shader_source(GL_VERTEX_SHADER, "shaders/vertex_shader.glsl");
 	shader_source* fragment_shader = create_shader_source(GL_FRAGMENT_SHADER, "shaders/fragment_shader.glsl");
+
+	// For Debugging
+	if (vertex_shader == NULL || fragment_shader == NULL) {
+		return -1;
+	}
 
 	shader_source sources[] = { *vertex_shader, *fragment_shader };
 

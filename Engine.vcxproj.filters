@@ -32,7 +32,7 @@
     <ClInclude Include="libs\scolor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\loader.hpp">
+    <ClInclude Include="src\loader.cpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\stb_image.h">
