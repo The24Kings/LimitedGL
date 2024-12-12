@@ -1,6 +1,3 @@
-#ifndef _LOADER_HPP
-#define _LOADER_HPP
-
 #include <glm/glm.hpp>
 #include <GLEW/glew.h>
 #include <glfw/glfw3.h>
@@ -11,6 +8,17 @@
 #include "tiny_obj_loader.h"
 #include "game_data.hpp"
 
+/**
+ * Load an obj file into the GPU
+ *
+ * @param baseDir The base directory of the obj file
+ * @param filename The name of the obj file
+ * @param vertices The vertices of the obj file
+ * @param indices The indices of the obj file
+ * @param texScale The scale of the texture
+ *
+ * @return 0 if successful, 1 if not
+ */
 int load_obj(const char* baseDir, const char* filename, std::vector<vertex> vertices, std::vector<uint32_t> indices, glm::vec2& texScale) {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
@@ -30,15 +38,17 @@ int load_obj(const char* baseDir, const char* filename, std::vector<vertex> vert
 	baseDirStr += "/";
 #endif
 
+	// Load the obj file
 	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, filename, baseDirStr.c_str())) {
 		throw std::runtime_error(warn + err);
 
 		return 1;
 	}
 
+	// Load the vertices and indices
 	for (const auto& shape : shapes) {
 		for (const auto& index : shape.mesh.indices) {
-			vertex vert;
+			vertex vert = {};
 
 			vert.pos = {
 				attrib.vertices[3 * index.vertex_index + 0],
@@ -62,6 +72,7 @@ int load_obj(const char* baseDir, const char* filename, std::vector<vertex> vert
 		}
 	}
 
+	// Print the obj file
 	printf("# of vertices  = %d\n", (int)(attrib.vertices.size()) / 3);
 	printf("# of normals   = %d\n", (int)(attrib.normals.size()) / 3);
 	printf("# of texcoords = %d\n", (int)(attrib.texcoords.size()) / 2);
@@ -80,7 +91,13 @@ int load_obj(const char* baseDir, const char* filename, std::vector<vertex> vert
 	return 0;
 }
 
-// This loads straight into the GPU
+/**
+ * Load a texture into the GPU
+ *
+ * @param filename The name of the texture file
+ *
+ * @return The texture ID
+ */
 unsigned load_texture(const char* filename) {
 	unsigned texture = NULL;
 	int texWidth, texHeight;
@@ -105,5 +122,3 @@ unsigned load_texture(const char* filename) {
 
 	return texture;
 }
-
-#endif // _LOADER_HPP
