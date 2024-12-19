@@ -19,20 +19,32 @@
 #include "game_data.hpp"
 
 #include "base_objects.hpp"
+#include "transformations.hpp"
+
+/* Window Data */
 
 float width = 1280;
 float height = 720;
+
+/* Engine Data */
+
+bool shutdown = false;
+
+/* Frame Data */
 
 double fps = 0.0;
 double target_fps = 60.0;
 double deltaTime = 0.0;
 
+/* Call Backs */
+
 static void resize_callback(GLFWwindow* window, int width, int height);
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 int main(void) {
     GLFWwindow* window;
 
-    /* Initialize the library */
+    /* Initialize GLFW */
     if (!glfwInit())
         return -1;
 
@@ -51,6 +63,7 @@ int main(void) {
 
     /* Callbacks */
     glfwSetFramebufferSizeCallback(window, resize_callback);
+	glfwSetKeyCallback(window, key_callback);
 
     /* Objects */
 	std::vector<obj_data*> objects;
@@ -103,7 +116,6 @@ int main(void) {
 		auto sleep = std::chrono::milliseconds((int)(1000.0 / (target_fps - fps))); // Calculate the sleep time
 
 		printf("FPS: %f\t DeltaTime: %f\n", fps, deltaTime);
-        printf("Sleeping for %f milliseconds\n", (double)sleep.count());
 
 		// Use the delta time to limit the frame rate
         std::this_thread::sleep_for(sleep); // TODO: Look into to make sure this is accurate (it's not)
@@ -127,3 +139,19 @@ static void resize_callback(GLFWwindow* window, int width, int height) {
 
     glViewport(0, 0, width, height);
 } // resize_callback
+
+/**
+* @brief Handle key presses
+ *
+ * @param window The window
+ * @param key The key pressed
+ * @param scancode The scancode
+ * @param action The action
+ * @param mods The mods
+*/
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+		shutdown = true;
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+} // key_callback
