@@ -1,8 +1,9 @@
 #ifndef _GAME_DATA_HPP
 #define _GAME_DATA_HPP
 
-#include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
+
+#include <glm/glm.hpp>
 #include <glm/gtx/hash.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <GLEW/glew.h>
@@ -16,26 +17,26 @@ struct vertex { // 32 bytes: texCoords is 24 bytes offset into the struct
 	bool operator==(const vertex& other) const {
 		return pos == other.pos && color == other.color && texCoord == other.texCoord;
 	}
-};
+}; // vertex
 
 struct texture {
 	const char* filename;
 	unsigned char* image_data; // (Using STB Image) Texture buffer: size = width * height * 4 (RGBA)
 	GLuint texture_handle;
 	GLint width, height;
-};
+}; // texture
 
 struct material {
 	texture* texture[32];
 	size_t texture_count; // Important to know how many textures are in the array (I never have any luck with sizeof)
 	float ambient, diffuse, specular, shininess;
-};
+}; // material
 
 struct obj_mesh {
 	std::vector<vertex> vertices;
 	std::vector<uint32_t> indices;
 	material mat;
-};
+}; // obj_mesh
 
 // ((vec3 ^ vec3 << 1) >> 1) ^ (vec2 << 1)
 template<> struct std::hash<vertex> { // Hash function for vertex struct
@@ -57,7 +58,7 @@ struct model_data {
 	glm::vec3 start_pos;
 	glm::quat start_rot;
 	glm::vec3 start_scale;
-};
+}; // model_data
 
 // Object Data
 class obj_data {
@@ -73,6 +74,6 @@ public:
 
 	virtual void move(double dt) {}
 	virtual void animate(double dt) {}
-};
+}; // obj_data
 
 #endif // _GAME_DATA_HPP

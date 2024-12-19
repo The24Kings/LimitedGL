@@ -77,7 +77,7 @@ public:
 		t_attr = glGetAttribLocation(program->handle, "in_texCoord");
 
 		return 0;
-	}
+	} // init
 
 	void draw(glm::mat4 vp) override {
 		glUseProgram(this->program);
@@ -108,8 +108,12 @@ public:
 		glEnableVertexAttribArray(t_attr);
 		glVertexAttribPointer(t_attr, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texCoord));
 
-		//TODO: Texture shit
-		// The material should contain a reference to the texture filename so we can draw it correctly 
+		//FIXME: Doesn't do the thing
+		// Texture
+		for (size_t i = 0; i < mesh.mat.texture_count; i++) {
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, mesh.mat.texture[i]->texture_handle);
+		}
 
 		int size;
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, e_buf);
@@ -118,7 +122,7 @@ public:
 		glUniformMatrix4fv(mvp_uniform, 1, 0, glm::value_ptr(vp));
 
 		glDrawElementsInstanced(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, 0, models_buffer.size());
-	}
+	} // draw
 
 	void deinit() override {
 		for (size_t i = 0; i < mesh.mat.texture_count; i++) {
@@ -126,9 +130,7 @@ public:
 				glDeleteTextures(1, &mesh.mat.texture[i]->texture_handle);
 			}
 		}
-	}
-};
-
-
+	} // deinit
+}; // loaded_obj
 
 #endif // _BASE_OBJECTS_HPP

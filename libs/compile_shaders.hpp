@@ -13,7 +13,7 @@ struct shader_source {
 	GLuint type;
 	const char* source;
 	char error[BUFFER_SIZE];
-};
+}; // shader_source
 
 struct shader_program {
 	GLuint handle;
@@ -21,11 +21,12 @@ struct shader_program {
 
 	shader_program() {
 		handle = 0;
+
 		for (size_t i = 0; i < 5; i++) {
 			sources[i] = 0;
 		}
 	}
-};
+}; // shader_program
 
 /*
 	Compile shaders and store them in a hash table, hash on the filename and the type of shader
@@ -33,6 +34,14 @@ struct shader_program {
 	Store the shader program in a hash table with the handle and the number of sources
 */
 
+/**
+* @brief Read a shader from a file
+ *
+ * @param buffer The buffer to read the shader into
+ * @param filename The name of the file to read the shader from
+ *
+ * @return True if the shader was read successfully, false if not
+*/
 static bool read_shader(char** buffer, const char* filename) { //TODO: change this to some kind of compiler to read #include statements in the shader
 	// Read in the shader source from a file
 	FILE* file = NULL;
@@ -84,8 +93,16 @@ static bool read_shader(char** buffer, const char* filename) { //TODO: change th
 	fclose(file);
 
 	return true;
-}
+} // read_shader
 
+/**
+* @brief Create a shader source
+ *
+ * @param type The type of shader
+ * @param source The shader source
+ *
+ * @return The shader source
+*/
 static shader_source* create_shader_source(GLuint type, const char* source) {
 	shader_source* shader = new shader_source(); // Allocate memory for the shader
 	uint64_t file_size = 0;
@@ -124,8 +141,19 @@ static shader_source* create_shader_source(GLuint type, const char* source) {
 	shader->source = source;
 
 	return shader;
-}
+} // create_shader_source
 
+/**
+* @brief Create a shader program
+ *
+ * @param v_file The vertex shader file
+ * @param tcs_file The tessellation control shader file
+ * @param tes_file The tessellation evaluation shader file
+ * @param g_file The geometry shader file
+ * @param f_file The fragment shader file
+ *
+ * @return The shader program
+*/
 static shader_program* create_shader_program(const char* v_file, const char* tcs_file, const char* tes_file, const char* g_file, const char* f_file) {
 	// Compile the shaders
 	if (!v_file || !f_file) {
@@ -163,6 +191,6 @@ static shader_program* create_shader_program(const char* v_file, const char* tcs
     program->handle = program_handle;
 
     return program;
-}
+} // create_shader_program
 
 #endif // _COMPLILE_SHADERS_HPP

@@ -152,6 +152,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\std_image.cpp" />
     <ClCompile Include="src\tiny_object_loader.cc" />
+    <ClCompile Include="src\transformations.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\base_objects.hpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="libs\game_data.hpp" />
     <ClInclude Include="libs\scolor.hpp" />
     <ClInclude Include="libs\stb_image.h" />
+    <ClInclude Include="libs\transformations.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\fragment_shader.glsl" />

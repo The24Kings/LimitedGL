@@ -16,7 +16,7 @@ struct transformation { // 128 bytes
 
 	transformation* parent; // Parent transformation for hierarchical transformations (shenanigans)
 	std::unordered_set<transformation*> children; // Children transformations for hierarchical transformations
-}; // transformation struct
+}; // transformation
 
 static void set_parent(transformation* new_parent, transformation* child_transform);
 static void	create_identity(transformation* result);

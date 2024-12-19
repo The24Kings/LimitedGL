@@ -98,11 +98,15 @@ int main(void) {
 		auto end = std::chrono::high_resolution_clock::now();
 		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-		fps = 1000.0 / (double)elapsed.count();
+		fps = 1000.0 / (double)elapsed.count(); // Calculate the frame rate (in milliseconds)
 		deltaTime = (target_fps / fps) > 1 ? 1 : (target_fps / fps); // Cap the delta time to 1
+		auto sleep = std::chrono::milliseconds((int)(1000.0 / (target_fps - fps))); // Calculate the sleep time
+
+		printf("FPS: %f\t DeltaTime: %f\n", fps, deltaTime);
+        printf("Sleeping for %f milliseconds\n", (double)sleep.count());
 
 		// Use the delta time to limit the frame rate
-		std::this_thread::sleep_for(std::chrono::milliseconds((int)(1000.0 / target_fps - fps))); // TODO: Look into to make sure this is accurate
+        std::this_thread::sleep_for(sleep); // TODO: Look into to make sure this is accurate (it's not)
     }
 
     glfwDestroyWindow(window);
@@ -110,9 +114,16 @@ int main(void) {
     return 0;
 }
 
+/**
+* @brief Resize the window
+ *
+ * @param window The window to resize
+ * @param width The new width
+ * @param height The new height
+*/
 static void resize_callback(GLFWwindow* window, int width, int height) {
     ::height = height;
     ::width = width;
 
     glViewport(0, 0, width, height);
-}
+} // resize_callback
