@@ -30,14 +30,8 @@ int load_obj(const char* baseDir, const char* filename, obj_mesh &mesh) {
 	std::string baseDirStr = baseDir;
 
 	if (baseDirStr.empty()) {
-		baseDir = ".";
+		baseDir = "./";
 	}
-
-#ifdef _WIN32
-	baseDirStr += "\\";
-#else
-	baseDirStr += "/";
-#endif
 
 	// Load the obj file
 	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, filename, baseDirStr.c_str())) {
@@ -82,7 +76,7 @@ int load_obj(const char* baseDir, const char* filename, obj_mesh &mesh) {
 	printf("# of shapes    = %d\n", (int)shapes.size());
 
 	return 0;
-}
+} // load_obj
 
 /**
  * Load a texture into the GPU
@@ -117,4 +111,4 @@ void load_texture(const char* filename, texture &tex) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_WRAP_BORDER);
 
 	free(tex.image_data); // Free the image data (we don't need it anymore)
-}
+} // load_texture
