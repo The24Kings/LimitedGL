@@ -32,9 +32,11 @@ bool shutdown = false;
 
 /* Frame Data */
 
-double fps = 0.0;
-double target_fps = 60.0;
-double deltaTime = 0.0;
+double target_framerate = 60;
+double framerate = 0;
+double deltaTime = 1.0;
+uint64_t target_frame_time = 16000000; // In nanoseconds (60 FPS)
+uint64_t elapsed_time = target_frame_time;
 
 /* Call Backs */
 
@@ -84,6 +86,7 @@ int main(void) {
 
     /* Loop until the user closes the window */
     glEnable(GL_DEPTH_TEST);
+
     while (!glfwWindowShouldClose(window)) {
 		auto start = std::chrono::high_resolution_clock::now();
 
@@ -108,17 +111,20 @@ int main(void) {
 		/* Swap front and back buffers */
         glfwSwapBuffers(window);
 
+		/* Calculate the frame rate */
 		auto end = std::chrono::high_resolution_clock::now();
-		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+		
+		elapsed_time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 
-		fps = 1000.0 / (double)elapsed.count(); // Calculate the frame rate (in milliseconds)
-		deltaTime = (target_fps / fps) > 1 ? 1 : (target_fps / fps); // Cap the delta time to 1
-		auto sleep = std::chrono::milliseconds((int)(1000.0 / (target_fps - fps))); // Calculate the sleep time
+        framerate = 1000000000.0 / (double)elapsed_time; // Calculate the frame rate (in nanoseconds)
+		deltaTime = (target_framerate / framerate) > 1 ? 1 : (target_framerate / framerate); // Cap the delta time to 1
 
-		printf("FPS: %f\t DeltaTime: %f\n", fps, deltaTime);
+		printf("Framerate: %f\t DeltaTime: %f\tElapsed Time : % " PRIu64 "\n", framerate, (float)deltaTime, elapsed_time);
 
-		// Use the delta time to limit the frame rate
-        std::this_thread::sleep_for(sleep); // TODO: Look into to make sure this is accurate (it's not)
+		/* Use Delta Time to sleep accoringly */
+        if (elapsed_time < target_frame_time) {
+            std::this_thread::sleep_for(std::chrono::nanoseconds(target_frame_time - elapsed_time));
+        }
     }
 
     glfwDestroyWindow(window);

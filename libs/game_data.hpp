@@ -9,6 +9,29 @@
 #include <GLEW/glew.h>
 #include <vector>
 
+#ifdef MAIN
+#define EXTERN
+#define INIT(x) = x
+#else
+#define EXTERN extern
+#define INIT(x)
+#endif
+
+/* Globals */
+
+EXTERN float width INIT(1280);
+EXTERN float height INIT(720);
+
+EXTERN bool shutdown INIT(false);
+
+EXTERN double target_framerate INIT(60);
+EXTERN double framerate INIT(0.0);
+EXTERN double deltaTime INIT(1.0);
+EXTERN uint64_t target_frame_time INIT(16000000); // In nanoseconds
+EXTERN uint64_t elapsed_time INIT(target_frame_time);
+
+/* Game Strutures */
+
 struct vertex { // 32 bytes: texCoords is 24 bytes offset into the struct
 	glm::vec3 pos;
 	glm::vec3 color;
