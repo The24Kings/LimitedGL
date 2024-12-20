@@ -48,11 +48,11 @@ public:
 
 		// Load and Bind textures
 		for (size_t i = 0; i < texture_files.size(); i++) {
-			texture tex = {};
+			texture* tex = new texture();
 
-			load_texture(texture_files[i].c_str(), &tex);
+			load_texture(texture_files[i].c_str(), tex);
 
-			this->mesh.mat.texture[i] = &tex;
+			this->mesh.mat.texture[i] = tex;
 			this->mesh.mat.texture_count++;
 
 			printf(BLUE("Bound texture: %d\tHandle: %d\n").c_str(), i, this->mesh.mat.texture[i]->texture_handle);

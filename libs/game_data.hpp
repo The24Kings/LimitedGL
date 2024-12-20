@@ -69,7 +69,10 @@ struct obj_mesh {
 	std::vector<uint32_t> indices;
 	material mat;
 
-	obj_mesh() : mat() {}
+	obj_mesh() : mat() {
+		vertices = std::vector<vertex>();
+		indices = std::vector<uint32_t>();
+	}
 }; // obj_mesh
 
 // ((vec3 ^ vec3 << 1) >> 1) ^ (vec2 << 1)
