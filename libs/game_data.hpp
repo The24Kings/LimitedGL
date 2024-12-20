@@ -9,6 +9,7 @@
 #include <GLEW/glew.h>
 #include <vector>
 
+/* Global shenanigans (so extern is used when defined outside main) */
 #ifdef MAIN
 #define EXTERN
 #define INIT(x) = x
@@ -37,6 +38,8 @@ struct vertex { // 32 bytes: texCoords is 24 bytes offset into the struct
 	glm::vec3 color;
 	glm::vec2 texCoord;
 
+	vertex() : pos(0.0f), color(1.0f), texCoord(0.0f) {}
+
 	bool operator==(const vertex& other) const {
 		return pos == other.pos && color == other.color && texCoord == other.texCoord;
 	}
@@ -47,18 +50,26 @@ struct texture {
 	unsigned char* image_data; // (Using STB Image) Texture buffer: size = width * height * 4 (RGBA)
 	GLuint texture_handle;
 	GLint width, height;
+
+	texture() : filename(nullptr), image_data(nullptr), texture_handle(-1), width(0), height(0) {}
 }; // texture
 
 struct material {
 	texture* texture[32];
 	size_t texture_count; // Important to know how many textures are in the array (I never have any luck with sizeof)
 	float ambient, diffuse, specular, shininess;
+
+	material() : texture_count(0), ambient(0.0f), diffuse(0.0f), specular(0.0f), shininess(0.0f) {
+		memset(texture, 0, 32);
+	}
 }; // material
 
 struct obj_mesh {
 	std::vector<vertex> vertices;
 	std::vector<uint32_t> indices;
 	material mat;
+
+	obj_mesh() : mat() {}
 }; // obj_mesh
 
 // ((vec3 ^ vec3 << 1) >> 1) ^ (vec2 << 1)
@@ -69,7 +80,7 @@ template<> struct std::hash<vertex> { // Hash function for vertex struct
 };
 
 int load_obj(const char* baseDir, const char* filename, obj_mesh &mesh);
-void load_texture(const char* filename, texture &tex);
+void load_texture(const char* filename, texture* tex);
 
 struct model_data {
 	// Model data for drawing

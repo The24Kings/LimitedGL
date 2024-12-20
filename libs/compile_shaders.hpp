@@ -13,6 +13,14 @@ struct shader_source {
 	GLuint type;
 	const char* source;
 	char error[BUFFER_SIZE];
+
+	shader_source() {
+		handle = 0;
+		type = 0;
+		source = nullptr;
+
+		memset(error, 0, BUFFER_SIZE);
+	}
 }; // shader_source
 
 struct shader_program {
@@ -22,13 +30,11 @@ struct shader_program {
 	shader_program() {
 		handle = 0;
 
-		for (size_t i = 0; i < 5; i++) {
-			sources[i] = 0;
-		}
+		memset(sources, 0, 5); // Set all the sources to null
 	}
 }; // shader_program
 
-/*
+/*TODO
 	Compile shaders and store them in a hash table, hash on the filename and the type of shader
 	Create a shader program and attach the shaders to it using the hash table to prevent recompilation
 	Store the shader program in a hash table with the handle and the number of sources
@@ -85,7 +91,7 @@ static bool read_shader(char** buffer, const char* filename) { //TODO: change th
 
 	temp_buffer[readlen] = '\0'; // Null terminate the buffer
 
-	printf("Read %zu bytes from %s\n", readlen, filename);
+	printf(YELLOW("Read %zu bytes from %s\n").c_str(), readlen, filename);
 	puts(temp_buffer);
 
 	*buffer = temp_buffer; // Set the buffer

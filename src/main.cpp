@@ -96,7 +96,7 @@ int main(void) {
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_DEPTH_BUFFER_BIT);
 
-        // Get the view and projection matrices
+        /* Get the view and projection matrices */
         glm::vec3 global_up(0, 1, 0);
 
         glm::vec3 look_at_point = glm::vec3(0.0f, 0.0f, 0.0f) + glm::vec3(cosf(0) * sinf(M_PI), sinf(0), cosf(0) * cosf(M_PI));
@@ -119,18 +119,18 @@ int main(void) {
         framerate = 1000000000.0 / (double)elapsed_time; // Calculate the frame rate (in nanoseconds)
 		deltaTime = (target_framerate / framerate) > 1 ? 1 : (target_framerate / framerate); // Cap the delta time to 1
 
-		printf("Framerate: %f\t DeltaTime: %f\tElapsed Time : % " PRIu64 "\n", framerate, (float)deltaTime, elapsed_time);
+		//printf("Framerate: %f\t DeltaTime: %f\tElapsed Time : % " PRIu64 "\n", framerate, (float)deltaTime, elapsed_time);
 
 		/* Use Delta Time to sleep accoringly */
         if (elapsed_time < target_frame_time) {
             std::this_thread::sleep_for(std::chrono::nanoseconds(target_frame_time - elapsed_time));
         }
-    }
+	} // Game Loop
 
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
-}
+} // main
 
 /**
 * @brief Resize the window

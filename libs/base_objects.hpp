@@ -30,7 +30,7 @@ public:
 		}
 
 		va_end(args);
-	}
+	} // loaded_obj ctor
 
 	int init() override {
 		// Load obj file
@@ -50,14 +50,12 @@ public:
 		for (size_t i = 0; i < texture_files.size(); i++) {
 			texture tex = {};
 
-			load_texture(texture_files[i].c_str(), tex);
+			load_texture(texture_files[i].c_str(), &tex);
 
 			this->mesh.mat.texture[i] = &tex;
 			this->mesh.mat.texture_count++;
 
-			// Bind the texture
-			glActiveTexture(tex.texture_handle);
-			glBindTexture(GL_TEXTURE_2D, tex.texture_handle);
+			printf(BLUE("Bound texture: %d\tHandle: %d\n").c_str(), i, this->mesh.mat.texture[i]->texture_handle);
 		}
 
 		// TODO: Change this to implement the hash table for one compiled shader program if they share the same shaders
@@ -77,7 +75,7 @@ public:
 		t_attr = glGetAttribLocation(program->handle, "in_texCoord");
 
 		return 0;
-	} // init
+	} // loaded_obj::init
 
 	void draw(glm::mat4 vp) override {
 		glUseProgram(this->program);
@@ -86,6 +84,7 @@ public:
 		std::vector<glm::mat4> models_buffer;
 		models_buffer.reserve(this->models.size());
 
+		//TODO: Apply the transformations to the models (using the transformation struct)
 		for (model_data& model : this->models) {
 			glm::mat4 new_model = glm::mat4(1.0f);
 
@@ -108,11 +107,13 @@ public:
 		glEnableVertexAttribArray(t_attr);
 		glVertexAttribPointer(t_attr, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texCoord));
 
-		//FIXME: Doesn't do the thing
+		//FIXME: The texture handle is getting corrupted?
 		// Texture
-		for (size_t i = 0; i < mesh.mat.texture_count; i++) {
+		for (size_t i = 0; i < this->mesh.mat.texture_count; i++) {
+			printf("Activating Texture: %d\tHandle: %d\n", i, this->mesh.mat.texture[i]->texture_handle);
+
 			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, mesh.mat.texture[i]->texture_handle);
+			glBindTexture(GL_TEXTURE_2D, this->mesh.mat.texture[i]->texture_handle);
 		}
 
 		int size;
@@ -122,7 +123,7 @@ public:
 		glUniformMatrix4fv(mvp_uniform, 1, 0, glm::value_ptr(vp));
 
 		glDrawElementsInstanced(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, 0, models_buffer.size());
-	} // draw
+	} // loaded_obj::draw
 
 	void deinit() override {
 		for (size_t i = 0; i < mesh.mat.texture_count; i++) {
@@ -130,7 +131,7 @@ public:
 				glDeleteTextures(1, &mesh.mat.texture[i]->texture_handle);
 			}
 		}
-	} // deinit
+	} // loaded_obj::deinit
 }; // loaded_obj
 
 #endif // _BASE_OBJECTS_HPP

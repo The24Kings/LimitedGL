@@ -84,31 +84,31 @@ int load_obj(const char* baseDir, const char* filename, obj_mesh &mesh) {
  * @param filename The name of the texture file
  * @param tex The texture object
  */
-void load_texture(const char* filename, texture &tex) {
+void load_texture(const char* filename, texture* tex) {
 	// Set the filename
-	tex.filename = filename;
+	tex->filename = filename;
 
 	// Load the image
-	tex.image_data = stbi_load(filename, &tex.width, &tex.height, 0, STBI_rgb_alpha);
+	tex->image_data = stbi_load(filename, &tex->width, &tex->height, 0, STBI_rgb_alpha);
 
-	if (!tex.image_data) {
+	if (!tex->image_data) {
 		printf(RED("Failed to load texture '%s'\n").c_str(), filename);
 
 		return;
 	}
 
-	printf(GREEN("Loaded texture: '%s' - %d by %d\n").c_str(), filename, tex.width, tex.height);
+	printf(GREEN("Loaded texture: '%s' - %d by %d\n").c_str(), filename, tex->width, tex->height);
 
 	// Bind the texture to the GPU
-	glGenTextures(1, &tex.texture_handle);
-	glBindTexture(GL_TEXTURE_2D, tex.texture_handle);
+	glGenTextures(1, &tex->texture_handle);
+	glBindTexture(GL_TEXTURE_2D, tex->texture_handle);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width, tex.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.image_data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex->width, tex->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex->image_data);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_WRAP_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_WRAP_BORDER);
 
-	free(tex.image_data); // Free the image data (we don't need it anymore)
+	free(tex->image_data); // Free the image data (we don't need it anymore)
 } // load_texture
