@@ -138,8 +138,8 @@ static shader_source* create_shader_source(GLuint type, const char* source) {
 	GLint success = 0;
 	glGetShaderiv(handle, GL_COMPILE_STATUS, &success);
 
-	if (success) { puts(GREEN("Compile Success").c_str()); }
-	else { puts(RED("Compile Failed").c_str()); return nullptr; } // Return null if the shader failed to compile
+	if (success) { puts(GREEN("Compile Success\n").c_str()); }
+	else { puts(RED("Compile Failed\n").c_str()); return nullptr; } // Return null if the shader failed to compile
 
 	// Set the shader properties
 	shader->handle = handle;
