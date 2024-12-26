@@ -86,24 +86,25 @@ public:
 	void draw(glm::mat4 vp) override {
 		glUseProgram(this->program);
 
-		// Apply the model data
-		std::vector<glm::mat4> models_buffer;
-		models_buffer.reserve(this->models.size());
-
-		//TODO: Apply the transformations to the models (using the transformation struct)
-		for (model_data& model : this->models) {
-			glm::mat4 new_model = glm::mat4(1.0f);
-
-			new_model = glm::translate(new_model, model.pos);
-			new_model = new_model * glm::mat4_cast(model.rot);
-			new_model = glm::scale(new_model, model.scale);
-
-			models_buffer.push_back(glm::mat4(1));
-		}
-
-		// Bind the model buffer data
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->models_buf);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, models_buffer.size() * sizeof(glm::mat4), models_buffer.data(), GL_STATIC_DRAW);
+		//TODO: Change to use uniform buffer objects
+		//// Apply the model data
+		//std::vector<glm::mat4> models_buffer;
+		//models_buffer.reserve(this->models.size());
+		//
+		////TODO: Apply the transformations to the models (using the transformation struct)
+		//for (model_data& model : this->models) {
+		//	glm::mat4 new_model = glm::mat4(1.0f);
+		//
+		//	new_model = glm::translate(new_model, model.pos);
+		//	new_model = new_model * glm::mat4_cast(model.rot);
+		//	new_model = glm::scale(new_model, model.scale);
+		//
+		//	models_buffer.push_back(glm::mat4(1));
+		//}
+		//
+		//// Bind the model buffer data
+		//glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->models_buf);
+		//glBufferData(GL_SHADER_STORAGE_BUFFER, models_buffer.size() * sizeof(glm::mat4), models_buffer.data(), GL_STATIC_DRAW);
 
 		// Texture
 		for (size_t i = 0; i < this->mesh.mat.texture_count; i++) {
@@ -124,10 +125,6 @@ public:
 		glEnableVertexAttribArray(1);
 
 		glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr);
-
-		//int size;
-		//glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-		//glDrawElementsInstanced(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, 0, models_buffer.size());
 	} // loaded_obj::draw
 
 	void deinit() override {
