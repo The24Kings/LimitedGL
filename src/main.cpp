@@ -33,6 +33,12 @@ int height = 720;
 
 bool shutdown = false;
 
+/* Game Data */
+
+std::vector<obj_data*> objects;
+camera main_camera = camera(60.0f, 1.0f, 1000.0f);
+player main_player = player(&main_camera);
+
 /* Frame Data */
 
 double target_framerate = 60;
@@ -45,6 +51,7 @@ uint64_t elapsed_time = target_frame_time;
 
 static void resize_callback(GLFWwindow* window, int width, int height);
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+static void object_movement();
 
 int main(void) {
     GLFWwindow* window;
@@ -67,9 +74,6 @@ int main(void) {
     glewInit();
 
     /* Player Data */
-	camera main_camera = camera(60.0f, 1.0f, 1000.0f);
-	player main_player = player(&main_camera);
-
 	main_player.transform_data.position = glm::vec3(0.0f, 0.0f, -5.0f);
 
     /* Callbacks */
@@ -77,12 +81,10 @@ int main(void) {
 	glfwSetKeyCallback(window, key_callback);
 
     /* Objects */
-	std::vector<obj_data*> objects;
-
 	loaded_obj obj = loaded_obj("objects/cube.obj", "objects/", 1, "objects/textures/brick.jpg");
-	obj.add(glm::vec3(0.0f, 2.0f, 0.0f));
     objects.push_back(&obj);
 
+    //FIXME: Shit breaks when drawing more than 1 object
 	//crosshair cross = crosshair();
 	//objects.push_back(&cross);
 
@@ -94,6 +96,9 @@ int main(void) {
 			return 1;
 		}
 	}
+
+    /* Create Threads */
+    std::thread movement_thread(object_movement);
 
     /* Loop until the user closes the window */
     glEnable(GL_DEPTH_TEST);
@@ -132,14 +137,19 @@ int main(void) {
 
 		//printf("Framerate: %f\t DeltaTime: %f\tElapsed Time : % " PRIu64 "\n", framerate, (float)deltaTime, elapsed_time);
 
-		/* Use Delta Time to sleep accoringly */
+		/* Pause the thread until the desired fps is achieved */
         if (elapsed_time < target_frame_time) {
             std::this_thread::sleep_for(std::chrono::nanoseconds(target_frame_time - elapsed_time));
         }
 	} // Game Loop
 
+	/* Join the threads */
+	movement_thread.join();
+
+	/* Deinitialize objects */
     glfwDestroyWindow(window);
     glfwTerminate();
+
     return 0;
 } // main
 
@@ -172,3 +182,23 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
 } // key_callback
+
+/**
+* @brief Move the objects
+*/
+static void object_movement() {
+    while (!shutdown) {
+		auto start = std::chrono::high_resolution_clock::now();
+
+        for (obj_data* obj : objects) {
+            obj->move(deltaTime);
+        }
+
+        /* Pause the thread until the desired fps is achieved */
+		auto end = std::chrono::high_resolution_clock::now();
+
+		elapsed_time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+
+		std::this_thread::sleep_for(std::chrono::nanoseconds(16000000 - elapsed_time));
+	} // while (!shutdown)
+} // object_movement
