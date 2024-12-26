@@ -41,6 +41,8 @@ public:
 
 		// Set the uniform locations
 		v_attr = glGetAttribLocation(this->program, "in_vertex");
+
+		return 0;
 	}
 
 	void draw(glm::mat4 vp) override {
