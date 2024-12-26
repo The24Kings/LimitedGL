@@ -89,6 +89,7 @@
       <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -105,6 +106,7 @@
       <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -121,6 +123,7 @@
       <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,6 +140,7 @@
       <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -156,8 +160,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\base_objects.hpp" />
+    <ClInclude Include="libs\camera.hpp" />
     <ClInclude Include="libs\compile_shaders.hpp" />
     <ClInclude Include="libs\game_data.hpp" />
+    <ClInclude Include="libs\player.hpp" />
     <ClInclude Include="libs\scolor.hpp" />
     <ClInclude Include="libs\stb_image.h" />
     <ClInclude Include="libs\transformations.hpp" />

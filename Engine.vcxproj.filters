@@ -56,6 +56,12 @@
     <ClInclude Include="libs\entities\crosshair.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="libs\player.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\camera.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\vertex_shader.glsl" />
