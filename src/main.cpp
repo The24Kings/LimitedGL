@@ -68,9 +68,9 @@ int main(void) {
 
     /* Player Data */
 	camera main_camera = camera(60.0f, 1.0f, 1000.0f);
-	player main_player = player(main_camera);
+	player main_player = player(&main_camera);
 
-	main_player.transform_data.position = glm::vec3(0.0f, 0.0f, 10.0f); // Set the player's position
+	main_player.transform_data.position = glm::vec3(0.0f, 0.0f, -5.0f);
 
     /* Callbacks */
     glfwSetFramebufferSizeCallback(window, resize_callback);
@@ -80,7 +80,7 @@ int main(void) {
 	std::vector<obj_data*> objects;
 
 	loaded_obj obj = loaded_obj("objects/cube.obj", "objects/", 1, "objects/textures/brick.jpg");
-	obj.add(glm::vec3(0.0f, 0.0f, 10.0f));
+	obj.add(glm::vec3(0.0f, 2.0f, 0.0f));
     objects.push_back(&obj);
 
 	//crosshair cross = crosshair();
@@ -108,13 +108,12 @@ int main(void) {
         glClear(GL_DEPTH_BUFFER_BIT);
 
         /* Get the view and projection matrices */
-        glm::vec3 global_up(0, 1, 0);
-
-		// Get the view matrix
-		glm::mat4 view = view_matrix(&main_camera, width / (float)height);
+		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = raw_perpective(main_camera.fov, width / (float)height, main_camera.near_plane, main_camera.far_plane);
-
-		glm::mat4 vp = projection * view;
+		glm::mat4 position = get_transform_matrix(&main_player.transform_data);
+		glm::mat4 rotation = glm::mat4_cast(main_player.transform_data.rotation);
+		
+		glm::mat4 vp = view * projection * rotation * position; // Apply the transformations from the player
 
 		for (obj_data* obj : objects) {
 			obj->draw(vp);
@@ -172,21 +171,4 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 		shutdown = true;
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
-
-	// Move the camera
-	int cam_up_down_axis = -GLFW_KEY_UP + GLFW_KEY_DOWN;
-	int cam_left_right_axis = GLFW_KEY_LEFT - GLFW_KEY_RIGHT;
-
-	printf("Camera Moving: %d\n", cam_up_down_axis);
-	printf("Camera Moving: %d\n", cam_left_right_axis);
-
-    // Move the player
-	int forward_backward_axis = -GLFW_KEY_W + GLFW_KEY_S;
-	int left_right_axis = GLFW_KEY_D - GLFW_KEY_A;
-	int up_down_axis = GLFW_KEY_SPACE - GLFW_KEY_LEFT_SHIFT;
-
-	//printf("Moving: %d\n", forward_backward_axis); 
-	//printf("Moving: %d\n", left_right_axis);
-	//printf("Moving: %d\n", up_down_axis);
-
 } // key_callback

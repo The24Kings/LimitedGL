@@ -18,19 +18,19 @@ struct key_status {
 }; // key_status
 
 struct player {
-	camera player_camera;
+	camera* player_camera;
 	transformation transform_data;
 	key_status keys;
 
 	glm::vec3 velocity;
 	glm::vec2 mouse_position;
 
-	player(camera player_camera) : player_camera(player_camera), keys(), velocity(0.0f, 0.0f, 0.0f), mouse_position(0.0f, 0.0f) {
+	player(camera* player_camera) : player_camera(player_camera), keys(), velocity(0.0f, 0.0f, 0.0f), mouse_position(0.0f, 0.0f) {
 		create_identity(&transform_data);
 	} // player ctor
 }; // player
 
-glm::quat camera_rotation(player* source) {
+static glm::quat camera_rotation(player* source) {
 	float angle_div = 0.0005f; // Mouse sensitivity
 
 	// Get the look at angle of the player
@@ -40,13 +40,13 @@ glm::quat camera_rotation(player* source) {
 	source->transform_data.rotation = y_rotation * x_rotation; // Rotate the player
 
 	// Update the camera position
-	source->player_camera.transform_data.position = source->transform_data.position + glm::vec3(0.0f, 1.9f, 0.0f); // Eye level
-	source->player_camera.transform_data.rotation = source->transform_data.rotation;
+	source->player_camera->transform_data.position = source->transform_data.position + glm::vec3(0.0f, 1.9f, 0.0f); // Eye level
+	source->player_camera->transform_data.rotation = source->transform_data.rotation;
 
 	return y_rotation * x_rotation;
 } // player::rotate_camera
 
-void move_player(player* source, float deltaTime) {
+static void move_player(player* source, float deltaTime) {
 	// Get inputs
 	int forward_backward_axis = source->keys.w - source->keys.s;
 	int left_right_axis = source->keys.d - source->keys.a;

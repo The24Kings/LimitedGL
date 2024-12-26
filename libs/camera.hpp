@@ -20,10 +20,4 @@ inline glm::mat4 raw_perpective(float fov, float aspect, float near_plane, float
 	return glm::perspective(glm::radians(fov), aspect, near_plane, far_plane);
 }
 
-glm::mat4 view_matrix(camera* source, float aspect) {
-	glm::mat4 result = get_camera_transform_matrix(&source->transform_data);
-
-	return glm::perspective(glm::radians(source->fov), aspect, source->near_plane, source->far_plane) * result;
-}
-
 #endif // _CAMERA_HPP

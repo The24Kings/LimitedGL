@@ -54,26 +54,6 @@ glm::mat4 get_transform_matrix(transformation* source) {
 }
 
 /**
-* @brief Get the camera transformation matrix of a transformation
-* 
-* @param source The transformation to get the camera matrix of
-* 
-* @return The camera transformation matrix
-*/
-glm::mat4 get_camera_transform_matrix(transformation* source) {
-	glm::mat4 result = glm::mat4(1.0f);
-
-	if (source->parent != NULL) {
-		result = get_camera_transform_matrix(source->parent);
-	}
-
-	result = glm::translate(result, -source->position);
-	result = result * glm::mat4_cast(glm::inverse(source->rotation));
-
-	return result;
-}
-
-/**
 * @brief Get the forward vector of a transformation matrix
 * 
 * @param source The transformation matrix to get the forward vector of
