@@ -8,19 +8,19 @@ class crosshair : virtual public obj_data {
 public:
 	int init() override {
 		float vertices[]{
-		-.025, .002,  0,
-		.025, .002,  0,
-		.025,  -.002, 0,
-		-.025, .002,  0,
-		.025, -.002, 0,
-		-.025, -.002, 0,
-
-		-.002, .04,  0,
-		.002, .04,  0,
-		.002,  -.04, 0,
-		-.002, .04,  0,
-		.002, -.04, 0,
-		-.002, -.04, 0,
+			-.025f, .002f,  0.0f,
+			.025f, .002f,  0.0f,
+			.025f,  -.002f, 0.0f,
+			-.025f, .002f,  0.0f,
+			.025f, -.002f, 0.0f,
+			-.025f, -.002f, 0.0f,
+			
+			-.002f, .04f,  0.0f,
+			.002f, .04f,  0.0f,
+			.002f,  -.04f, 0.0f,
+			-.002f, .04f,  0.0f,
+			.002f, -.04f, 0.0f,
+			-.002f, -.04f, 0.0f,
 		};
 
 		glGenVertexArrays(1, &vao); // Generate the vertex array object
@@ -46,9 +46,9 @@ public:
 	void draw(glm::mat4 vp) override {
 		glUseProgram(this->program);
 
-		// Set the vertex attribute
-		glVertexAttribPointer(v_attr, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		glEnableVertexAttribArray(v_attr);
+		// Set the vertex attribute pointers
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
 
 		// Draw the object
 		glDrawArrays(GL_TRIANGLES, 0, 12);
