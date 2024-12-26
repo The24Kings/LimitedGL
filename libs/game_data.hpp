@@ -20,8 +20,8 @@
 
 /* Globals */
 
-EXTERN float width INIT(1280);
-EXTERN float height INIT(720);
+EXTERN int width INIT(1280);
+EXTERN int height INIT(720);
 
 EXTERN bool shutdown INIT(false);
 
@@ -113,6 +113,13 @@ public:
 
 	virtual void move(double dt) {}
 	virtual void animate(double dt) {}
+
+	virtual ~obj_data() { deinit(); }
+
+	obj_data() : program(-1), mvp_uniform(-1), models_buf(-1), v_attr(-1), t_attr(-1), c_attr(-1), v_buf(-1), c_buf(-1), e_buf(-1), vao(-1) {
+		models = std::vector<model_data>();
+		mesh = obj_mesh();
+	}
 }; // obj_data
 
 #endif // _GAME_DATA_HPP
