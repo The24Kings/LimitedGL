@@ -15,11 +15,12 @@
 #define _USE_MATH_DEFINES
 #include<math.h>
 
+#include "transformations.hpp"
 #include "compile_shaders.hpp"
 #include "game_data.hpp"
 
 #include "base_objects.hpp"
-#include "transformations.hpp"
+#include "entities/crosshair.hpp"
 
 /* Window Data */
 
@@ -71,9 +72,8 @@ int main(void) {
 	std::vector<obj_data*> objects;
 
 	loaded_obj obj = loaded_obj("objects/cube.obj", "objects/", 1, "objects/textures/brick.jpg");
-	obj.add(glm::vec3(0.0f, 0.0f, 10.0f), glm::quat(1.0f, 0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-
-	objects.push_back(&obj);
+	obj.add(glm::vec3(0.0f, 0.0f, 10.0f));
+    objects.push_back(&obj);
 
 	/* Initialize objects */
 	for (obj_data* obj : objects) {
@@ -100,7 +100,7 @@ int main(void) {
         glm::vec3 global_up(0, 1, 0);
 
         glm::vec3 look_at_point = glm::vec3(0.0f, 0.0f, 0.0f) + glm::vec3(cosf(0) * sinf(M_PI), sinf(0), cosf(0) * cosf(M_PI));
-        glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), look_at_point, global_up);
+        glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), look_at_point, global_up) * glm::translate(glm::mat4(1), glm::vec3(0, 0, -10));
         glm::mat4 projection = glm::perspective(45.0f, width / height, 0.1f, 1000.0f);
         glm::mat4 vp = projection * view;
 

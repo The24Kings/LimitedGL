@@ -53,16 +53,25 @@
     <ClInclude Include="libs\transformations.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="libs\entities\crosshair.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\vertex_shader.glsl" />
     <None Include="shaders\fragment_shader.glsl" />
     <None Include="shaders\loaded_obj_fragment_shader.glsl" />
     <None Include="shaders\loaded_obj_vertex_shader.glsl" />
+    <None Include="objects\cube.mtl" />
+    <None Include="shaders\crosshair_fragment_shader.glsl" />
+    <None Include="shaders\crosshair_vertex_shader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="objects\textures\brick.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="objects\cube.obj" />
   </ItemGroup>
 </Project>

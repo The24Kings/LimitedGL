@@ -101,13 +101,15 @@ struct model_data {
 class obj_data {
 public:
 	GLuint program, mvp_uniform, models_buf, v_attr, t_attr, c_attr, v_buf, c_buf, e_buf; // model view projection uniform, models buffer, vertex attribute, texture attribute, color attribute, vertex buffer, color buffer, element buffer, texture
+	GLuint vao; // vertex array object
+
 	std::vector<model_data> models;
 	obj_mesh mesh;
 
 	virtual int init() { return 0; }
 	virtual void draw(glm::mat4 vp) {}
 	virtual void deinit() {}
-	virtual void add(glm::vec3 pos, glm::quat rot, glm::vec3 scale) { models.push_back({ pos, rot, scale, pos, rot, scale }); }
+	virtual void add(glm::vec3 pos, glm::quat rot = glm::quat(1, 0, 0, 0), glm::vec3 scale = glm::vec3(1)) { models.push_back({pos, rot, scale, pos, rot, scale}); }
 
 	virtual void move(double dt) {}
 	virtual void animate(double dt) {}

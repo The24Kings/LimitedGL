@@ -36,15 +36,29 @@ public:
 		// Load obj file
 		load_obj(baseDir, object_file, mesh);
 
+		// Generate the vertex array object
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+
+		// Generate the vertex buffer object
 		glGenBuffers(1, &v_buf);
 		glBindBuffer(GL_ARRAY_BUFFER, v_buf);
 		glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(vertex), mesh.vertices.data(), GL_STATIC_DRAW);
 
+		// Generate the indices buffer object
 		glGenBuffers(1, &e_buf);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, e_buf);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(uint32_t), mesh.indices.data(), GL_STATIC_DRAW);
 
-		glGenBuffers(1, &models_buf);
+		// Set the vertex attribute pointers
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, pos));
+		glEnableVertexAttribArray(0);
+
+		// Set the texture attribute pointers
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texCoord));
+		glEnableVertexAttribArray(1);
+
+		//glGenBuffers(1, &models_buf);
 
 		// Load and Bind textures
 		for (size_t i = 0; i < texture_files.size(); i++) {
@@ -92,37 +106,31 @@ public:
 			new_model = new_model * glm::mat4_cast(model.rot);
 			new_model = glm::scale(new_model, model.scale);
 
-			models_buffer.push_back(new_model);
+			models_buffer.push_back(glm::mat4(1));
 		}
 
 		// Bind the model buffer data
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->models_buf);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, models_buffer.size() * sizeof(glm::mat4), models_buffer.data(), GL_STATIC_DRAW);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, this->models_buf);
 
-		glEnableVertexAttribArray(v_attr);
-		glBindBuffer(GL_ARRAY_BUFFER, v_buf);
-		glVertexAttribPointer(v_attr, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, pos));
-
-		glEnableVertexAttribArray(t_attr);
-		glVertexAttribPointer(t_attr, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texCoord));
-
-		//FIXME: The texture handle is getting corrupted?
 		// Texture
 		for (size_t i = 0; i < this->mesh.mat.texture_count; i++) {
-			printf("Activating Texture: %d\tHandle: %d\n", i, this->mesh.mat.texture[i]->texture_handle);
+			//printf("Activating Texture: %d\tHandle: %d\n", i, this->mesh.mat.texture[i]->texture_handle);
 
 			glActiveTexture(GL_TEXTURE0 + i);
 			glBindTexture(GL_TEXTURE_2D, this->mesh.mat.texture[i]->texture_handle);
 		}
 
-		int size;
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, e_buf);
-		glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+		glUniformMatrix4fv(mvp_uniform, 1, 0, glm::value_ptr(vp)); // Set the model view projection matrix
 
-		glUniformMatrix4fv(mvp_uniform, 1, 0, glm::value_ptr(vp));
+		glBindVertexArray(vao); // Bind the vertex array object
+		glBindBuffer(e_buf, GL_ELEMENT_ARRAY_BUFFER); // Bind the element buffer object
 
-		glDrawElementsInstanced(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, 0, models_buffer.size());
+		glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr);
+
+		//int size;
+		//glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+		//glDrawElementsInstanced(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, 0, models_buffer.size());
 	} // loaded_obj::draw
 
 	void deinit() override {
