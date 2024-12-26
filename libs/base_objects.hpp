@@ -50,14 +50,6 @@ public:
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, e_buf);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(uint32_t), mesh.indices.data(), GL_STATIC_DRAW);
 
-		// Set the vertex attribute pointers
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, pos));
-		glEnableVertexAttribArray(0);
-
-		// Set the texture attribute pointers
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texCoord));
-		glEnableVertexAttribArray(1);
-
 		//glGenBuffers(1, &models_buf);
 
 		// Load and Bind textures
@@ -123,8 +115,13 @@ public:
 
 		glUniformMatrix4fv(mvp_uniform, 1, 0, glm::value_ptr(vp)); // Set the model view projection matrix
 
-		glBindVertexArray(vao); // Bind the vertex array object
-		glBindBuffer(e_buf, GL_ELEMENT_ARRAY_BUFFER); // Bind the element buffer object
+		// Set the vertex attribute pointers
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, pos));
+		glEnableVertexAttribArray(0);
+
+		// Set the texture attribute pointers
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texCoord));
+		glEnableVertexAttribArray(1);
 
 		glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr);
 
