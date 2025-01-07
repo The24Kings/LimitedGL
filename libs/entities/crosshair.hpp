@@ -6,6 +6,8 @@
 
 class crosshair : virtual public obj_data {
 public:
+	crosshair() {}
+
 	int init() override {
 		float vertices[]{
 			-.025f, .002f,  0.0f,
@@ -31,29 +33,40 @@ public:
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // Load the vertex buffer object
 
 		// Create the shader program
-		shader_program* program = create_shader_program("shaders/crosshair_vertex_shader.glsl", 0, 0, 0, "shaders/crosshair_fragment_shader.glsl");
+		shader_program* shader_program = create_shader_program("shaders/crosshair_vertex_shader.glsl", 0, 0, 0, "shaders/crosshair_fragment_shader.glsl");
 
-		if (program == nullptr) { // Check if the program was created successfully
+		if (shader_program == nullptr) { // Check if the program was created successfully
+			printf(RED("Failed to create shader program\n").c_str());
+
 			return 1;
 		}
 
-		this->program = program->handle;
+		program = shader_program->handle;
 
 		// Set the uniform locations
-		v_attr = glGetAttribLocation(this->program, "in_vertex");
+		v_attr = glGetAttribLocation(program, "in_vertex");
 
 		return 0;
 	}
 
 	void draw(glm::mat4 vp) override {
-		glUseProgram(this->program);
+		glUseProgram(program);
 
 		// Set the vertex attribute pointers
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(v_attr, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(v_attr);
+
+		// Handle Errors
+		GLenum error = glGetError();
+
+		if (error != GL_NO_ERROR) {
+			printf(RED("OpenGL Error: %d\n").c_str(), error);
+
+			return;
+		}
 
 		// Draw the object
-		glDrawArrays(GL_TRIANGLES, 0, 12);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 };
 
