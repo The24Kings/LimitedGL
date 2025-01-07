@@ -20,7 +20,7 @@
  *
  * @return 0 if successful, 1 if not
  */
-int load_obj(const char* baseDir, const char* filename, obj_mesh &mesh) {
+int load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -62,8 +62,8 @@ int load_obj(const char* baseDir, const char* filename, obj_mesh &mesh) {
 				1.0f - attrib.texcoords[2 * index.texcoord_index + 1] // Flip the texture (because stb_image.h flips it)
 			};
 
-			mesh.vertices.push_back(vert);
-			mesh.indices.push_back(mesh.indices.size());
+			mesh->vertices.push_back(vert);
+			mesh->indices.push_back(mesh->indices.size());
 		}
 	}
 
@@ -84,7 +84,7 @@ int load_obj(const char* baseDir, const char* filename, obj_mesh &mesh) {
  * @param filename The name of the texture file
  * @param tex The texture object
  */
-void load_texture(const char* filename, texture* tex) {
+int load_texture(const char* filename, texture* tex) {
 	// Set the filename
 	tex->filename = filename;
 
@@ -94,7 +94,7 @@ void load_texture(const char* filename, texture* tex) {
 	if (!tex->image_data) {
 		printf(RED("Failed to load texture '%s'\n").c_str(), filename);
 
-		return;
+		return 1;
 	}
 
 	printf(GREEN("Loaded texture: '%s' - %d by %d\n").c_str(), filename, tex->width, tex->height);
@@ -111,4 +111,6 @@ void load_texture(const char* filename, texture* tex) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_WRAP_BORDER);
 
 	free(tex->image_data); // Free the image data (we don't need it anymore)
+
+	return 0;
 } // load_texture

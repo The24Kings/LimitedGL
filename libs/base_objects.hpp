@@ -34,7 +34,11 @@ public:
 
 	int init() override {
 		// Load obj file
-		load_obj(baseDir, object_file, mesh);
+		if (!load_obj(baseDir, object_file, mesh)) {
+			printf(RED("Failed to load obj file: %s\n").c_str(), object_file);
+
+			return 1;
+		}
 
 		// Generate the vertex array object
 		glGenVertexArrays(1, &vao);
@@ -43,12 +47,12 @@ public:
 		// Generate the vertex buffer object
 		glGenBuffers(1, &v_buf);
 		glBindBuffer(GL_ARRAY_BUFFER, v_buf);
-		glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(vertex), mesh.vertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, mesh->vertices.size() * sizeof(vertex), mesh->vertices.data(), GL_STATIC_DRAW);
 
 		// Generate the indices buffer object
 		glGenBuffers(1, &e_buf);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, e_buf);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(uint32_t), mesh.indices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indices.size() * sizeof(uint32_t), mesh->indices.data(), GL_STATIC_DRAW);
 
 		//glGenBuffers(1, &models_buf);
 
@@ -56,35 +60,47 @@ public:
 		for (size_t i = 0; i < texture_files.size(); i++) {
 			texture* tex = new texture();
 
-			load_texture(texture_files[i].c_str(), tex);
+			if (!load_texture(texture_files[i].c_str(), tex)) {
+				printf(RED("Failed to load texture: %s\n").c_str(), texture_files[i].c_str());
 
-			this->mesh.mat.texture[i] = tex;
-			this->mesh.mat.texture_count++;
+				return 1;
+			}
 
-			printf(BLUE("Bound texture: %d\tHandle: %d\n").c_str(), i, this->mesh.mat.texture[i]->texture_handle);
+			this->mesh->mat.texture[i] = tex;
+			this->mesh->mat.texture_count++;
+
+			printf(BLUE("Bound texture: %d\tHandle: %d\n").c_str(), i, this->mesh->mat.texture[i]->texture_handle);
 		}
 
 		// TODO: Change this to implement the hash table for one compiled shader program if they share the same shaders
 
 		// Make Program
-		shader_program* program = create_shader_program("shaders/loaded_obj_vertex_shader.glsl", 0, 0, 0, "shaders/loaded_obj_fragment_shader.glsl");
+		shader_program* shader_program = create_shader_program("shaders/loaded_obj_vertex_shader.glsl", 0, 0, 0, "shaders/loaded_obj_fragment_shader.glsl");
 
-		if (program == nullptr) { // Check if the program was created successfully
+		if (shader_program == nullptr) { // Check if the program was created successfully
+			printf(RED("Failed to create shader program\n").c_str());
+
 			return 1;
 		}
 
-		this->program = program->handle;
+		program = shader_program->handle;
 
 		// Set the uniform locations
-		mvp_uniform = glGetUniformLocation(program->handle, "vp");
-		v_attr = glGetAttribLocation(program->handle, "in_vertex");
-		t_attr = glGetAttribLocation(program->handle, "in_texCoord");
+		mvp_uniform = glGetUniformLocation(program, "vp");
+		v_attr = glGetAttribLocation(program, "in_vertex");
+		t_attr = glGetAttribLocation(program, "in_texCoord");
 
 		return 0;
 	} // loaded_obj::init
 
 	void draw(glm::mat4 vp) override {
-		glUseProgram(this->program);
+		if (!mesh || mesh->vertices.empty() || mesh->indices.empty()) {
+			printf(RED("Mesh data is not properly initialized.").c_str());
+
+			return;
+		}
+
+		glUseProgram(program);
 
 		//TODO: Change to use uniform buffer objects
 		//// Apply the model data
@@ -107,30 +123,37 @@ public:
 		//glBufferData(GL_SHADER_STORAGE_BUFFER, models_buffer.size() * sizeof(glm::mat4), models_buffer.data(), GL_STATIC_DRAW);
 
 		// Texture
-		for (size_t i = 0; i < this->mesh.mat.texture_count; i++) {
-			//printf("Activating Texture: %d\tHandle: %d\n", i, this->mesh.mat.texture[i]->texture_handle);
-
+		for (size_t i = 0; i < mesh->mat.texture_count; i++) {
 			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, this->mesh.mat.texture[i]->texture_handle);
+			glBindTexture(GL_TEXTURE_2D, mesh->mat.texture[i]->texture_handle);
 		}
 
 		glUniformMatrix4fv(mvp_uniform, 1, 0, glm::value_ptr(vp)); // Set the model view projection matrix
 
 		// Set the vertex attribute pointers
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, pos));
-		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(v_attr);
+		glVertexAttribPointer(v_attr, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, pos));
 
 		// Set the texture attribute pointers
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texCoord));
-		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(t_attr);
+		glVertexAttribPointer(t_attr, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texCoord));
 
-		glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr);
+		// Handle Errors
+		GLenum error = glGetError();
+
+		if (error != GL_NO_ERROR) {
+			printf(RED("OpenGL Error: %d\n").c_str(), error);
+
+			return;
+		}
+
+		glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, NULL);
 	} // loaded_obj::draw
 
 	void deinit() override {
-		for (size_t i = 0; i < mesh.mat.texture_count; i++) {
-			if (mesh.mat.texture[i]->texture_handle != -1) {
-				glDeleteTextures(1, &mesh.mat.texture[i]->texture_handle);
+		for (size_t i = 0; i < mesh->mat.texture_count; i++) {
+			if (mesh->mat.texture[i]->texture_handle != -1) {
+				glDeleteTextures(1, &mesh->mat.texture[i]->texture_handle);
 			}
 		}
 	} // loaded_obj::deinit

@@ -60,7 +60,7 @@ struct material {
 	float ambient, diffuse, specular, shininess;
 
 	material() : texture_count(0), ambient(0.0f), diffuse(0.0f), specular(0.0f), shininess(0.0f) {
-		memset(texture, 0, 32);
+		memset(texture, 0, sizeof(texture));
 	}
 }; // material
 
@@ -82,8 +82,8 @@ template<> struct std::hash<vertex> { // Hash function for vertex struct
 	}
 };
 
-int load_obj(const char* baseDir, const char* filename, obj_mesh &mesh);
-void load_texture(const char* filename, texture* tex);
+int load_obj(const char* baseDir, const char* filename, obj_mesh* mesh);
+int load_texture(const char* filename, texture* tex);
 
 struct model_data {
 	// Model data for drawing
@@ -103,13 +103,13 @@ public:
 	GLuint program, mvp_uniform, models_buf, v_attr, t_attr, c_attr, v_buf, c_buf, e_buf; // model view projection uniform, models buffer, vertex attribute, texture attribute, color attribute, vertex buffer, color buffer, element buffer, texture
 	GLuint vao; // vertex array object
 
-	std::vector<model_data> models;
-	obj_mesh mesh;
+	//std::vector<model_data> models; TODO: Change this to probably use uniforms
+	obj_mesh* mesh; //TODO: Add support for UVs for multiple textures
 
 	virtual int init() { return 0; }
 	virtual void draw(glm::mat4 vp) {}
 	virtual void deinit() {}
-	virtual void add(glm::vec3 pos, glm::quat rot = glm::quat(1, 0, 0, 0), glm::vec3 scale = glm::vec3(1)) { models.push_back({pos, rot, scale, pos, rot, scale}); }
+	//virtual void add(glm::vec3 pos, glm::quat rot = glm::quat(1, 0, 0, 0), glm::vec3 scale = glm::vec3(1)) { models.push_back({pos, rot, scale, pos, rot, scale}); }
 
 	virtual void move(double dt) {}
 	virtual void animate(double dt) {}
@@ -117,8 +117,8 @@ public:
 	virtual ~obj_data() { deinit(); }
 
 	obj_data() : program(-1), mvp_uniform(-1), models_buf(-1), v_attr(-1), t_attr(-1), c_attr(-1), v_buf(-1), c_buf(-1), e_buf(-1), vao(-1) {
-		models = std::vector<model_data>();
-		mesh = obj_mesh();
+		//models = std::vector<model_data>();
+		mesh = new obj_mesh();
 	}
 }; // obj_data
 
