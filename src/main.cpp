@@ -85,8 +85,8 @@ int main(void) {
     objects.push_back(&obj);
 
     //FIXME: Shit breaks when drawing more than 1 object
-	//crosshair cross = crosshair();
-	//objects.push_back(&cross);
+    crosshair cross = crosshair();
+    objects.push_back(&cross);
 
 	/* Initialize objects */
 	for (obj_data* obj : objects) {
