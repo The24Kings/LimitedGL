@@ -20,7 +20,7 @@
  *
  * @return 0 if successful, 1 if not
  */
-int load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
+bool load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -37,7 +37,7 @@ int load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
 	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, filename, baseDirStr.c_str())) {
 		throw std::runtime_error(err);
 
-		return 1;
+		return false;
 	}
 
 	// Load the vertices and indices
@@ -75,7 +75,7 @@ int load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
 	printf("# of materials = %d\n", (int)materials.size());
 	printf("# of shapes    = %d\n", (int)shapes.size());
 
-	return 0;
+	return true;
 } // load_obj
 
 /**
@@ -84,7 +84,7 @@ int load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
  * @param filename The name of the texture file
  * @param tex The texture object
  */
-int load_texture(const char* filename, texture* tex) {
+bool load_texture(const char* filename, texture* tex) {
 	// Set the filename
 	tex->filename = filename;
 
@@ -94,7 +94,7 @@ int load_texture(const char* filename, texture* tex) {
 	if (!tex->image_data) {
 		printf(RED("Failed to load texture '%s'\n").c_str(), filename);
 
-		return 1;
+		return false;
 	}
 
 	printf(GREEN("Loaded texture: '%s' - %d by %d\n").c_str(), filename, tex->width, tex->height);
@@ -112,5 +112,5 @@ int load_texture(const char* filename, texture* tex) {
 
 	free(tex->image_data); // Free the image data (we don't need it anymore)
 
-	return 0;
+	return true;
 } // load_texture
