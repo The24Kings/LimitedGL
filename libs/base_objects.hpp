@@ -130,6 +130,10 @@ public:
 
 		glUniformMatrix4fv(mvp_uniform, 1, 0, glm::value_ptr(vp)); // Set the model view projection matrix
 
+		// Rebind the buffers
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, e_buf);
+		glBindBuffer(GL_ARRAY_BUFFER, v_buf);
+
 		// Set the vertex attribute pointers
 		glEnableVertexAttribArray(v_attr);
 		glVertexAttribPointer(v_attr, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, pos));

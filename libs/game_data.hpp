@@ -82,8 +82,8 @@ template<> struct std::hash<vertex> { // Hash function for vertex struct
 	}
 };
 
-int load_obj(const char* baseDir, const char* filename, obj_mesh* mesh);
-int load_texture(const char* filename, texture* tex);
+bool load_obj(const char* baseDir, const char* filename, obj_mesh* mesh);
+bool load_texture(const char* filename, texture* tex);
 
 struct model_data {
 	// Model data for drawing

@@ -84,7 +84,6 @@ int main(void) {
 	loaded_obj obj = loaded_obj("objects/cube.obj", "objects/", 1, "objects/textures/brick.jpg");
     objects.push_back(&obj);
 
-    //FIXME: Shit breaks when drawing more than 1 object
     crosshair cross = crosshair();
     objects.push_back(&cross);
 
@@ -112,10 +111,18 @@ int main(void) {
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_DEPTH_BUFFER_BIT);
 
+        /* Temporary Player Movement */
+        if (main_player.keys.up) {
+            main_player.transform_data.position.y += 1;
+        }
+        if (main_player.keys.down) {
+            main_player.transform_data.position.y -= 1;
+        }
+
         /* Get the view and projection matrices */
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = raw_perpective(main_camera.fov, width / (float)height, main_camera.near_plane, main_camera.far_plane);
-		glm::mat4 position = get_transform_matrix(&main_player.transform_data);
+		glm::mat4 position = get_transform_matrix(&main_player.transform_data); //FIXME: I am upsidedown??
 		glm::mat4 rotation = glm::mat4_cast(main_player.transform_data.rotation);
 		
 		glm::mat4 vp = view * projection * rotation * position; // Apply the transformations from the player
@@ -180,6 +187,20 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		shutdown = true;
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+
+	// Player Movement
+    if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+        main_player.keys.up = 1;
+    }
+	if (key == GLFW_KEY_UP && action == GLFW_RELEASE) {
+		main_player.keys.up = 0;
+	}
+    if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+        main_player.keys.down = 1;
+    }
+	if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
+		main_player.keys.down = 0;
 	}
 } // key_callback
 
