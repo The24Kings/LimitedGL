@@ -61,6 +61,9 @@ public:
 			// Create the texture file path
 			const char* tex_file = concat(texBaseDir, texture_files[i].c_str());
 
+			//TODO: This is great and loads all the textures to the GPU, but we currently still only support one texture for rendering
+			//TODO: Add support for multiple textures in rendering
+
 			if (!load_texture(tex_file, tex)) {
 				printf(RED("Failed to load texture: %s\n").c_str(), tex_file);
 

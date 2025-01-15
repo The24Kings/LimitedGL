@@ -86,8 +86,7 @@ int main(void) {
     //objects.push_back(&obj);
 
 	loaded_obj test_obj = loaded_obj(
-        "objects/shooting_gallery.obj", "objects/", "objects/textures/shooting_gallery/", 29, 
-        "door_model_01_0.png",
+        "objects/shooting_gallery.obj", "objects/", "objects/textures/shooting_gallery/", 23, 
         "sh_mz_hari_01_0.png",
         "sh_mz_kabe_01_1500.png",
         "sh_mz_kabe_02_6900.png",
@@ -110,12 +109,7 @@ int main(void) {
         "sh_mz_torc_02_57180.png",
         "sh_mz_uvwater_0_57B80.png",
         "sh_mz_wt_01_58600.png",
-        "sh_mz_yuka_01_59000.png",
-        "tokei_room_01_0.png.001.png",
-        "z2_hari_model_0_0.png.001.png",
-        "z2_paneru_model_0.png.001.png",
-        "z2_tannsin_mode_0.png.001.png",
-        "z2_tannsin_mode_2A00.png.001.png"
+        "sh_mz_yuka_01_59000.png"
     );
 	objects.push_back(&test_obj);
 
