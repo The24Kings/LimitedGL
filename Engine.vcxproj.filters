@@ -62,6 +62,9 @@
     <ClInclude Include="libs\camera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="libs\utils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\vertex_shader.glsl" />
@@ -74,6 +77,93 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="objects\textures\brick.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\door_model_01_0.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_hari_01_0.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_kabe_01_1500.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_kabe_02_6900.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_kanban_01_9300.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_kasa_01_BD00.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_ki_01_E700.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_ki_02_11100.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_komono_01_13B00.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_komono_02_1E300.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_komono_gl_28B00.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_mat_01_2BF80.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_nawa_01_2E980.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_nawa_02_2FD80.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_omocha_01_32581.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_omocha_01_32582.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_pos_01_37980.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_scr_01_3CD80.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_sp_01_2B500.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_torc_01_51D80.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_torc_02_57180.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_uvwater_0_57B80.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_wt_01_58600.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\sh_mz_yuka_01_59000.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\tokei_room_01_0.png.001.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\z2_hari_model_0_0.png.001.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\z2_paneru_model_0.png.001.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\z2_tannsin_mode_0.png.001.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="objects\textures\shooting_gallery\z2_tannsin_mode_2A00.png.001.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

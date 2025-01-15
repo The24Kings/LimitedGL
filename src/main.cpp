@@ -15,6 +15,7 @@
 #define _USE_MATH_DEFINES
 #include<math.h>
 
+#include "utils.hpp"
 #include "transformations.hpp"
 #include "camera.hpp"
 #include "player.hpp"
@@ -81,8 +82,42 @@ int main(void) {
 	glfwSetKeyCallback(window, key_callback);
 
     /* Objects */
-	loaded_obj obj = loaded_obj("objects/cube.obj", "objects/", 1, "objects/textures/brick.jpg");
-    objects.push_back(&obj);
+	//loaded_obj obj = loaded_obj("objects/cube.obj", "objects/", 1, "objects/textures/brick.jpg");
+    //objects.push_back(&obj);
+
+	loaded_obj test_obj = loaded_obj(
+        "objects/shooting_gallery.obj", "objects/", "objects/textures/shooting_gallery/", 29, 
+        "door_model_01_0.png",
+        "sh_mz_hari_01_0.png",
+        "sh_mz_kabe_01_1500.png",
+        "sh_mz_kabe_02_6900.png",
+        "sh_mz_kanban_01_9300.png",
+        "sh_mz_kasa_01_BD00.png",
+        "sh_mz_ki_01_E700.png",
+        "sh_mz_ki_02_11100.png",
+        "sh_mz_komono_01_13B00.png",
+        "sh_mz_komono_02_1E300.png",
+        "sh_mz_komono_gl_28B00.png",
+        "sh_mz_mat_01_2BF80.png",
+        "sh_mz_nawa_01_2E980.png",
+        "sh_mz_nawa_02_2FD80.png",
+        "sh_mz_omocha_01_32581.png",
+        "sh_mz_omocha_01_32582.png",
+        "sh_mz_pos_01_37980.png",
+        "sh_mz_scr_01_3CD80.png",
+        "sh_mz_sp_01_2B500.png",
+        "sh_mz_torc_01_51D80.png",
+        "sh_mz_torc_02_57180.png",
+        "sh_mz_uvwater_0_57B80.png",
+        "sh_mz_wt_01_58600.png",
+        "sh_mz_yuka_01_59000.png",
+        "tokei_room_01_0.png.001.png",
+        "z2_hari_model_0_0.png.001.png",
+        "z2_paneru_model_0.png.001.png",
+        "z2_tannsin_mode_0.png.001.png",
+        "z2_tannsin_mode_2A00.png.001.png"
+    );
+	objects.push_back(&test_obj);
 
     crosshair cross = crosshair();
     objects.push_back(&cross);

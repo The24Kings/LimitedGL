@@ -5,13 +5,15 @@
 #include <stdarg.h>
 
 #include "compile_shaders.hpp"
+#include "utils.hpp"
 #include "game_data.hpp"
 
 class loaded_obj : virtual public obj_data {
 public:
 	std::vector<std::string> texture_files;
 	const char* object_file;
-	const char* baseDir;
+	const char* objBaseDir;
+	const char* texBaseDir;
 
 	/**
 	* Create a new loaded_obj object
@@ -20,7 +22,7 @@ public:
 	* @param bD The base directory of the texture file
 	* @param tf The texture file
 	*/
-	loaded_obj(const char* of, const char* bD, size_t tex_count, ...) : object_file(of), baseDir(bD) { //TODO: Change to also include texture base directory
+	loaded_obj(const char* of, const char* obD, const char* tbd, size_t tex_count, ...) : object_file(of), objBaseDir(obD), texBaseDir(tbd) {
 		va_list args;
 		va_start(args, tex_count);
 
@@ -34,7 +36,7 @@ public:
 
 	int init() override {
 		// Load obj file
-		if (!load_obj(baseDir, object_file, mesh)) {
+		if (!load_obj(objBaseDir, object_file, mesh)) {
 			printf(RED("Failed to load obj file: %s\n").c_str(), object_file);
 
 			return 1;
@@ -56,11 +58,16 @@ public:
 		for (size_t i = 0; i < texture_files.size(); i++) {
 			texture* tex = new texture();
 
-			if (!load_texture(texture_files[i].c_str(), tex)) {
-				printf(RED("Failed to load texture: %s\n").c_str(), texture_files[i].c_str());
+			// Create the texture file path
+			const char* tex_file = concat(texBaseDir, texture_files[i].c_str());
+
+			if (!load_texture(tex_file, tex)) {
+				printf(RED("Failed to load texture: %s\n").c_str(), tex_file);
 
 				return 1;
 			}
+
+			delete tex_file; // Free the memory
 
 			this->mesh->mat.texture[i] = tex;
 			this->mesh->mat.texture_count++;

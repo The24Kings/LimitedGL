@@ -1,0 +1,161 @@
+# Aspose.3D Wavefront OBJ Exporter
+# Copyright 2004-2024 Aspose Pty Ltd.
+# File created: 01/14/2025 23:48:58
+
+newmtl material-03F4D192
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_ki_01_E700.png
+newmtl material-016F26E5
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_komono_gl_28B00.png
+	map_Ke sh_mz_komono_gl_28B00.png
+newmtl material-01FA2D6F
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_torc_02_57180.png
+	map_Ke sh_mz_torc_02_57180.png
+newmtl material-00C67779
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_torc_01_51D80.png
+newmtl material-016B629B
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_yuka_01_59000.png
+newmtl material-00AA050C
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_torc_01_51D80.png
+newmtl material-03A11D01
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_scr_01_3CD80.png
+newmtl material-014ACA55
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_pos_01_37980.png
+newmtl material-01B3E64A
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_nawa_02_2FD80.png
+newmtl material-0185C441
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_nawa_01_2E980.png
+newmtl material-002B4EB1
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_mat_01_2BF80.png
+newmtl material-0028CB6E
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_komono_02_1E300.png
+	map_Ke sh_mz_komono_02_1E300.png
+newmtl material-00764F7E
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	Ks 0.4573644 0.4573644 0.4573644
+	Ns 93
+	d 1
+	Tr 0
+	map_Kd sh_mz_komono_01_13B00.png
+newmtl material-039B5E2A
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_ki_02_11100.png
+newmtl material-02A96C9E
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_kasa_01_BD00.png
+newmtl material-004BB6BC
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_kanban_01_9300.png
+newmtl material-000869A3
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_kabe_02_6900.png
+newmtl material-031D6112
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_kabe_01_1500.png
+newmtl material-02917C90
+	Ka 0 0 0
+	Kd 0.8 0.8 0.8
+	Ke 0 0 0
+	illum 2
+	d 1
+	Tr 0
+	map_Kd sh_mz_hari_01_0.png
