@@ -20,7 +20,7 @@ public:
 	* @param bD The base directory of the texture file
 	* @param tf The texture file
 	*/
-	loaded_obj(const char* of, const char* bD, size_t tex_count, ...) : object_file(of), baseDir(bD) {
+	loaded_obj(const char* of, const char* bD, size_t tex_count, ...) : object_file(of), baseDir(bD) { //TODO: Change to also include texture base directory
 		va_list args;
 		va_start(args, tex_count);
 
@@ -39,10 +39,6 @@ public:
 
 			return 1;
 		}
-
-		// Generate the vertex array object
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
 
 		// Generate the vertex buffer object
 		glGenBuffers(1, &v_buf);

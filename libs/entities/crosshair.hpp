@@ -25,9 +25,6 @@ public:
 			-.002f, -.04f, 0.0f,
 		};
 
-		glGenVertexArrays(1, &vao); // Generate the vertex array object
-		glBindVertexArray(vao); // Bind the vertex array object
-
 		glGenBuffers(1, &v_buf); // Generate the vertex buffer object
 		glBindBuffer(GL_ARRAY_BUFFER, v_buf); // Bind the vertex buffer object
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // Load the vertex buffer object
