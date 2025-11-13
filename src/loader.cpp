@@ -8,7 +8,6 @@
 #include "stb_image.h"
 #include "tiny_obj_loader.h"
 #include "game_data.hpp"
-#include "OpenGL_API.hpp"
 
 /**
  * Load an obj file into the GPU
