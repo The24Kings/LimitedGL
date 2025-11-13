@@ -114,10 +114,16 @@ int main(void) {
 
         /* Temporary Player Movement */
         if (main_player.keys.up) {
-            main_player.transform_data.position.y += 1;
+            main_player.transform_data.position.y -= 1;
         }
         if (main_player.keys.down) {
-            main_player.transform_data.position.y -= 1;
+            main_player.transform_data.position.y += 1;
+        }
+        if (main_player.keys.left) {
+            main_player.transform_data.position.x += 1;
+        }
+        if (main_player.keys.right) {
+            main_player.transform_data.position.x -= 1;
         }
 
         /* Get the view and projection matrices */
@@ -203,6 +209,18 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
 		main_player.keys.down = 0;
 	}
+    if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+        main_player.keys.left = 1;
+    }
+    if (key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
+        main_player.keys.left = 0;
+    }
+    if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+        main_player.keys.right = 1;
+    }
+    if (key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
+        main_player.keys.right = 0;
+    }
 } // key_callback
 
 /**
