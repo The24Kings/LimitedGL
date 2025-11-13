@@ -10,10 +10,9 @@
 
 class loaded_obj : virtual public obj_data {
 public:
-	std::vector<std::string> texture_files;
+	const char* texture_file;
 	const char* object_file;
 	const char* objBaseDir;
-	const char* texBaseDir;
 
 	/**
 	* Create a new loaded_obj object
@@ -22,17 +21,7 @@ public:
 	* @param bD The base directory of the texture file
 	* @param tf The texture file
 	*/
-	loaded_obj(const char* of, const char* obD, const char* tbd, size_t tex_count, ...) : object_file(of), objBaseDir(obD), texBaseDir(tbd) {
-		va_list args;
-		va_start(args, tex_count);
-
-		// Push the texture files into the vector
-		for (size_t i = 0; i < tex_count; i++) {
-			texture_files.push_back(va_arg(args, const char*));
-		}
-
-		va_end(args);
-	} // loaded_obj ctor
+	loaded_obj(const char* of, const char* obD, const char* tf) : object_file(of), objBaseDir(obD), texture_file(tf) { } // loaded_obj ctor
 
 	int init() override {
 		// Load obj file
@@ -55,32 +44,20 @@ public:
 		//glGenBuffers(1, &models_buf);
 
 		// Load and Bind textures
-		for (size_t i = 0; i < texture_files.size(); i++) {
-			texture* tex = new texture();
+		texture* tex = new texture();
 
-			// Create the texture file path
-			const char* tex_file = concat(texBaseDir, texture_files[i].c_str());
+		if (!load_texture(texture_file, tex)) {
+			printf(RED("Failed to load texture: %s\n").c_str(), texture_file);
 
-			//TODO: This is great and loads all the textures to the GPU, but we currently still only support one texture for rendering
-			//TODO: Add support for multiple textures in rendering
-
-			if (!load_texture(tex_file, tex)) {
-				printf(RED("Failed to load texture: %s\n").c_str(), tex_file);
-
-				return 1;
-			}
-
-			delete tex_file; // Free the memory
-
-			this->mesh->mat.texture[i] = tex;
-			this->mesh->mat.texture_count++;
-
-			printf(BLUE("Bound texture: %d\tHandle: %d\n").c_str(), i, this->mesh->mat.texture[i]->texture_handle);
+			return 1;
 		}
+
+		this->mesh->mat.texture = tex;
+
+		printf(BLUE("Texture Handle: %d\n").c_str(), this->mesh->mat.texture->texture_handle);
 
 		// TODO: Change this to implement the hash table for one compiled shader program if they share the same shaders
 
-		// Make Program
 		shader_program* shader_program = create_shader_program("shaders/loaded_obj_vertex_shader.glsl", 0, 0, 0, "shaders/loaded_obj_fragment_shader.glsl");
 
 		if (shader_program == nullptr) { // Check if the program was created successfully
@@ -129,12 +106,11 @@ public:
 		//glBufferData(GL_SHADER_STORAGE_BUFFER, models_buffer.size() * sizeof(glm::mat4), models_buffer.data(), GL_STATIC_DRAW);
 
 		// Texture
-		for (size_t i = 0; i < mesh->mat.texture_count; i++) {
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, mesh->mat.texture[i]->texture_handle);
-		}
-
-		glUniformMatrix4fv(mvp_uniform, 1, 0, glm::value_ptr(vp)); // Set the model view projection matrix
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, mesh->mat.texture->texture_handle);
+		
+		// Set the model view projection matrix
+		glUniformMatrix4fv(mvp_uniform, 1, 0, glm::value_ptr(vp));
 
 		// Rebind the buffers
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, e_buf);
@@ -161,10 +137,8 @@ public:
 	} // loaded_obj::draw
 
 	void deinit() override {
-		for (size_t i = 0; i < mesh->mat.texture_count; i++) {
-			if (mesh->mat.texture[i]->texture_handle != -1) {
-				glDeleteTextures(1, &mesh->mat.texture[i]->texture_handle);
-			}
+		if (mesh->mat.texture->texture_handle != -1) {
+			glDeleteTextures(1, &mesh->mat.texture->texture_handle);
 		}
 	} // loaded_obj::deinit
 }; // loaded_obj

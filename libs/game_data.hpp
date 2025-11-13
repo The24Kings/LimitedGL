@@ -55,13 +55,10 @@ struct texture {
 }; // texture
 
 struct material {
-	texture* texture[32];
-	size_t texture_count; // Important to know how many textures are in the array (I never have any luck with sizeof)
+	texture* texture;
 	float ambient, diffuse, specular, shininess;
 
-	material() : texture_count(0), ambient(0.0f), diffuse(0.0f), specular(0.0f), shininess(0.0f) {
-		memset(texture, 0, sizeof(texture));
-	}
+	material() : texture(nullptr), ambient(0.0f), diffuse(0.0f), specular(0.0f), shininess(0.0f) { }
 }; // material
 
 struct obj_mesh {

@@ -8,6 +8,7 @@
 #include "stb_image.h"
 #include "tiny_obj_loader.h"
 #include "game_data.hpp"
+#include "OpenGL_API.hpp"
 
 /**
  * Load an obj file into the GPU
@@ -24,7 +25,7 @@ bool load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
-	std::string warn, err;
+	std::string err;
 
 	// Correct the base directory
 	std::string baseDirStr = baseDir;
@@ -33,14 +34,12 @@ bool load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
 		baseDir = "./";
 	}
 
-	// Load the obj file
 	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, filename, baseDirStr.c_str())) {
 		throw std::runtime_error(err);
 
 		return false;
 	}
 
-	// Load the vertices and indices
 	for (const auto& shape : shapes) {
 		for (const auto& index : shape.mesh.indices) {
 			vertex vert = {};
@@ -67,7 +66,6 @@ bool load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
 		}
 	}
 
-	// Print the obj file
 	printf(GREEN("\nLoaded obj: %s\n").c_str(), filename);
 	printf("# of vertices  = %d\n", (int)(attrib.vertices.size()) / 3);
 	printf("# of normals   = %d\n", (int)(attrib.normals.size()) / 3);
@@ -85,10 +83,7 @@ bool load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
  * @param tex The texture object
  */
 bool load_texture(const char* filename, texture* tex) {
-	// Set the filename
 	tex->filename = filename;
-
-	// Load the image
 	tex->image_data = stbi_load(filename, &tex->width, &tex->height, 0, STBI_rgb_alpha);
 
 	if (!tex->image_data) {
@@ -99,7 +94,7 @@ bool load_texture(const char* filename, texture* tex) {
 
 	printf(GREEN("Loaded texture: '%s' - %d by %d\n").c_str(), filename, tex->width, tex->height);
 
-	// Bind the texture to the GPU
+	// Bind texture to GPU
 	glGenTextures(1, &tex->texture_handle);
 	glBindTexture(GL_TEXTURE_2D, tex->texture_handle);
 
@@ -110,7 +105,7 @@ bool load_texture(const char* filename, texture* tex) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_WRAP_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_WRAP_BORDER);
 
-	free(tex->image_data); // Free the image data (we don't need it anymore)
+	free(tex->image_data);
 
 	return true;
 } // load_texture

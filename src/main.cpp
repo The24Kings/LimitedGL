@@ -82,10 +82,10 @@ int main(void) {
 	glfwSetKeyCallback(window, key_callback);
 
     /* Objects */
-	//loaded_obj obj = loaded_obj("objects/cube.obj", "objects/", 1, "objects/textures/brick.jpg");
-    //objects.push_back(&obj);
+	loaded_obj obj = loaded_obj("objects/cube.obj", "objects/", "objects/textures/brick.jpg");
+    objects.push_back(&obj);
 
-	loaded_obj test_obj = loaded_obj(
+	/*loaded_obj test_obj = loaded_obj(
         "objects/shooting_gallery.obj", "objects/", "objects/textures/shooting_gallery/", 23, 
         "sh_mz_hari_01_0.png",
         "sh_mz_kabe_01_1500.png",
@@ -111,7 +111,7 @@ int main(void) {
         "sh_mz_wt_01_58600.png",
         "sh_mz_yuka_01_59000.png"
     );
-	objects.push_back(&test_obj);
+	objects.push_back(&test_obj);*/
 
     crosshair cross = crosshair();
     objects.push_back(&cross);
