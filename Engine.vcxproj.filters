@@ -44,22 +44,22 @@
     <ClInclude Include="libs\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\game_data.hpp">
+    <ClInclude Include="entities\game_data.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\base_objects.hpp">
+    <ClInclude Include="entities\base_objects.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\transformations.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\entities\crosshair.hpp">
+    <ClInclude Include="entities\crosshair.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\player.hpp">
+    <ClInclude Include="entities\player.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\camera.hpp">
+    <ClInclude Include="entities\camera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\utils.hpp">

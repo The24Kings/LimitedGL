@@ -23,12 +23,12 @@
 #include "game_data.hpp"
 
 #include "base_objects.hpp"
-#include "entities/crosshair.hpp"
+#include "crosshair.hpp"
 
 /* Window Data */
 
-int width = 1280;
-int height = 720;
+int width = 1920;
+int height = 1080;
 
 /* Engine Data */
 
@@ -84,34 +84,6 @@ int main(void) {
     /* Objects */
 	loaded_obj obj = loaded_obj("objects/cube.obj", "objects/", "objects/textures/brick.jpg");
     objects.push_back(&obj);
-
-	/*loaded_obj test_obj = loaded_obj(
-        "objects/shooting_gallery.obj", "objects/", "objects/textures/shooting_gallery/", 23, 
-        "sh_mz_hari_01_0.png",
-        "sh_mz_kabe_01_1500.png",
-        "sh_mz_kabe_02_6900.png",
-        "sh_mz_kanban_01_9300.png",
-        "sh_mz_kasa_01_BD00.png",
-        "sh_mz_ki_01_E700.png",
-        "sh_mz_ki_02_11100.png",
-        "sh_mz_komono_01_13B00.png",
-        "sh_mz_komono_02_1E300.png",
-        "sh_mz_komono_gl_28B00.png",
-        "sh_mz_mat_01_2BF80.png",
-        "sh_mz_nawa_01_2E980.png",
-        "sh_mz_nawa_02_2FD80.png",
-        "sh_mz_omocha_01_32581.png",
-        "sh_mz_omocha_01_32582.png",
-        "sh_mz_pos_01_37980.png",
-        "sh_mz_scr_01_3CD80.png",
-        "sh_mz_sp_01_2B500.png",
-        "sh_mz_torc_01_51D80.png",
-        "sh_mz_torc_02_57180.png",
-        "sh_mz_uvwater_0_57B80.png",
-        "sh_mz_wt_01_58600.png",
-        "sh_mz_yuka_01_59000.png"
-    );
-	objects.push_back(&test_obj);*/
 
     crosshair cross = crosshair();
     objects.push_back(&cross);
