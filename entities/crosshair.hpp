@@ -30,7 +30,7 @@ public:
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // Load the vertex buffer object
 
 		// Create the shader program
-		shader_program* shader_program = create_shader_program("shaders/crosshair_vertex_shader.glsl", 0, 0, 0, "shaders/crosshair_fragment_shader.glsl");
+		shader_program* shader_program = create_shader_program("shaders/crosshair_vertex_shader.glsl", nullptr, nullptr, nullptr, "shaders/crosshair_fragment_shader.glsl");
 
 		if (shader_program == nullptr) { // Check if the program was created successfully
 			printf(RED("Failed to create shader program\n").c_str());
@@ -56,6 +56,7 @@ public:
 		glVertexAttribPointer(v_attr, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(v_attr);
 
+		// FIXME: Do error callback for opengl
 		// Handle Errors
 		GLenum error = glGetError();
 

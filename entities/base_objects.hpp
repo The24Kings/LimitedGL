@@ -41,8 +41,6 @@ public:
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, e_buf);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indices.size() * sizeof(uint32_t), mesh->indices.data(), GL_STATIC_DRAW);
 
-		//glGenBuffers(1, &models_buf);
-
 		// Load and Bind textures
 		texture* tex = new texture();
 
@@ -68,10 +66,15 @@ public:
 
 		program = shader_program->handle;
 
-		// Set the uniform locations
+		// Set the shader variable information
 		mvp_uniform = glGetUniformLocation(program, "vp");
 		v_attr = glGetAttribLocation(program, "in_vertex");
 		t_attr = glGetAttribLocation(program, "in_texCoord");
+
+		// TODO: Add support for normals and lighting
+		// vec3 normalvector attribute
+		// vec3 lightdir uniform
+		// vec3 lightcolor uniform
 
 		return 0;
 	} // loaded_obj::init
@@ -124,6 +127,7 @@ public:
 		glEnableVertexAttribArray(t_attr);
 		glVertexAttribPointer(t_attr, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texCoord));
 
+		// FIXME: Do error callback for opengl
 		// Handle Errors
 		GLenum error = glGetError();
 
