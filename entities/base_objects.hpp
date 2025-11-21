@@ -58,7 +58,7 @@ public:
 
 		// TODO: Change this to implement the hash table for one compiled shader program if they share the same shaders
 
-		shader_program* shader_program = create_shader_program("shaders/loaded_obj_vertex_shader.glsl", 0, 0, 0, "shaders/loaded_obj_fragment_shader.glsl");
+		shader_program* shader_program = create_shader_program("shaders/loaded_obj_vertex_shader.glsl", nullptr, nullptr, nullptr, "shaders/loaded_obj_fragment_shader.glsl");
 
 		if (shader_program == nullptr) { // Check if the program was created successfully
 			printf(RED("Failed to create shader program\n").c_str());

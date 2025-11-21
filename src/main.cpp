@@ -109,27 +109,26 @@ int main(void) {
         /* Poll for and process events */
         glfwPollEvents();
         glClearColor(0, 0, 0, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glClear(GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         /* Temporary Player Movement */
         if (main_player.keys.up) {
-            main_player.transform_data.position.y -= 1;
-        }
-        if (main_player.keys.down) {
             main_player.transform_data.position.y += 1;
         }
+        if (main_player.keys.down) {
+            main_player.transform_data.position.y -= 1;
+        }
         if (main_player.keys.left) {
-            main_player.transform_data.position.x += 1;
+            main_player.transform_data.position.x -= 1;
         }
         if (main_player.keys.right) {
-            main_player.transform_data.position.x -= 1;
+            main_player.transform_data.position.x += 1;
         }
 
         /* Get the view and projection matrices */
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = raw_perpective(main_camera.fov, width / (float)height, main_camera.near_plane, main_camera.far_plane);
-		glm::mat4 position = get_transform_matrix(&main_player.transform_data); //FIXME: I am upsidedown??
+		glm::mat4 position = get_transform_matrix(&main_player.transform_data);
 		glm::mat4 rotation = glm::mat4_cast(main_player.transform_data.rotation);
 		
 		glm::mat4 vp = view * projection * rotation * position; // Apply the transformations from the player
