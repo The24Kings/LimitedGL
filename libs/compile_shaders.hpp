@@ -139,7 +139,14 @@ static shader_source* create_shader_source(GLuint type, const char* source) {
 	glGetShaderiv(handle, GL_COMPILE_STATUS, &success);
 
 	if (success) { puts(GREEN("Compile Success\n").c_str()); }
-	else { puts(RED("Compile Failed\n").c_str()); return nullptr; } // Return null if the shader failed to compile
+	else {
+		// Clear up GPU memory
+		puts(RED("Compile Failed\n").c_str());
+
+		glDeleteShader(handle);
+
+		return nullptr;
+	} // Return null if the shader failed to compile
 
 	// Set the shader properties
 	shader->handle = handle;
@@ -192,7 +199,20 @@ static shader_program* create_shader_program(const char* v_file, const char* tcs
     glGetProgramiv(program_handle, GL_LINK_STATUS, &isLinked);
 
     if (isLinked) { puts(GREEN("Link Success").c_str()); }
-    else { puts(RED("Link Failed").c_str()); return nullptr; } // Return null if the program failed to link
+    else {
+		puts(RED("Link Failed").c_str());
+
+		// Clear up GPU memory
+		glDeleteProgram(program_handle);
+
+		if (vertex_shader) { glDeleteShader(vertex_shader->handle); }
+		if (tess_control_shader) { glDeleteShader(tess_control_shader->handle); }
+		if (tess_eval_shader) { glDeleteShader(tess_eval_shader->handle); }
+		if (geometry_shader) { glDeleteShader(geometry_shader->handle); }
+		if (fragment_shader) { glDeleteShader(fragment_shader->handle); }
+
+		return nullptr; 
+	} // Return null if the program failed to link
 
     program->handle = program_handle;
 
