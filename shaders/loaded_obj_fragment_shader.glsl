@@ -1,12 +1,15 @@
 #version 460
 
+in vec3 frag_color;
 in vec2 frag_texCoord;
-out vec4 outcolor;
+
 uniform sampler2D tex;
 
-void main(void) {
-  outcolor = texture(tex, frag_texCoord);
+out vec4 out_color;
 
-  if(outcolor.a < 0.1)
+void main(void) {
+  out_color = texture(tex, frag_texCoord) * vec4(frag_color, 1.0);
+
+  if(out_color.a < 0.1)
 		discard;
 }

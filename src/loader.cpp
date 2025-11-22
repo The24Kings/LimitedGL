@@ -49,11 +49,7 @@ bool load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
 				attrib.vertices[3 * index.vertex_index + 2]
 			};
 
-			vert.color = {
-				1.0f,
-				1.0f,
-				1.0f
-			};
+			vert.color = { 0.8f, 0.3f, 0.5f };
 
 			vert.texCoord = {
 				attrib.texcoords[2 * index.texcoord_index + 0],
@@ -104,7 +100,7 @@ bool load_texture(const char* filename, texture* tex) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_WRAP_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_WRAP_BORDER);
 
-	free(tex->image_data);
+	stbi_image_free(tex->image_data);
 
 	return true;
 } // load_texture

@@ -59,6 +59,10 @@ public:
 		// Draw the object
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
+
+	void deinit() override {
+		if (v_buf != -1) { glDeleteBuffers(1, &v_buf); }
+	} // crosshair::deinit
 };
 
 #endif // _CROSSHAIR_HPP

@@ -43,9 +43,8 @@ glm::vec3 local_right;
 glm::vec3 local_forward;
 
 frustum main_frustum = frustum(45.0, 0.1, 100.0);
-camera main_camera = camera(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0, 0.0), &main_frustum);
-float camera_speed = 4.5f;
-player main_player = player(&main_camera);
+camera main_camera = camera(glm::vec3(0.0, 0.0, 5.0));
+player main_player = player();
 
 /* Frame Data */
 
@@ -138,7 +137,7 @@ int main(void) {
         if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0) { continue; }
 
 		/* Render Main */
-        glClearColor(0, 0, 0, 1.0);
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Local Axis of the player
@@ -146,18 +145,17 @@ int main(void) {
         local_forward = glm::normalize(glm::vec3(view[0][2], 0, view[2][2]));
 
         // Player Movement
-        // FIXME: There is some shenanigans going on with the camera movement, some axis are inverted?
-        if (main_player.keys.w) { main_camera.cameraPos -= local_forward * camera_speed * (float)deltaTime; }
-        if (main_player.keys.s) { main_camera.cameraPos += local_forward * camera_speed * (float)deltaTime; }
-        if (main_player.keys.a) { main_camera.cameraPos -= local_right * camera_speed * (float)deltaTime; }
-        if (main_player.keys.d) { main_camera.cameraPos += local_right * camera_speed * (float)deltaTime; }
-        if (main_player.keys.space) { main_camera.cameraPos += glm::vec3(0, 1, 0) * camera_speed * (float)deltaTime; }
-        if (main_player.keys.shift) { main_camera.cameraPos -= glm::vec3(0, 1, 0) * camera_speed * (float)deltaTime; }
+        if (main_player.keys.w) { main_camera.cameraMoveForward(deltaTime); }
+        if (main_player.keys.s) { main_camera.cameraMoveBackward(deltaTime); }
+        if (main_player.keys.a) { main_camera.cameraMoveLeft(deltaTime); }
+        if (main_player.keys.d) { main_camera.cameraMoveRight(deltaTime); }
+        if (main_player.keys.space) { main_camera.cameraMoveUp(deltaTime); }
+        if (main_player.keys.shift) { main_camera.cameraMoveDown(deltaTime); }
 
         /* Get the view and projection matrices */
 		model = glm::mat4(1.0f);
-        view = glm::lookAt(main_camera.cameraPos, main_camera.cameraPos + main_camera.cameraDirection, main_camera.cameraUp);
-		projection = glm::perspective(main_camera.camera_frustum->fov, SCRN_WIDTH / (float)SCRN_HEIGHT, main_camera.camera_frustum->near_plane, main_camera.camera_frustum->far_plane);
+		view = main_camera.getViewMatrix();
+        projection = glm::perspective(glm::radians(main_frustum.fovDegrees), (float)SCRN_WIDTH / (float)SCRN_HEIGHT, main_frustum.near_plane, main_frustum.far_plane);
 		
         mvp = projection * view * model; // Apply the transformations from the player
 
@@ -217,33 +215,15 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 * @brief Callback to handle mouse scroll events
 */
 static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    camera_speed += (float)yoffset;
-	camera_speed = camera_speed < 0.0f ? 0.0f : camera_speed;
+	main_frustum.cameraZoom(yoffset);
 } // scroll_callback
 
 static void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-	// Clamp the mouse position to the window bounds
-    double center_x = SCRN_WIDTH / 2.0f;
-    double center_y = SCRN_HEIGHT / 2.0f;
-	double dx = center_x - xpos; //FIXME: Inverted axis?
-	double dy = center_y - ypos; //FIXME: Inverted axis?
+	// Re-center the mouse
+	float center_x = SCRN_WIDTH / 2.0f;
+	float center_y = SCRN_HEIGHT / 2.0f;
 
     glfwSetCursorPos(window, center_x, center_y);
 
-	// Apply mouse movement to camera target
-    float sensitivity = 0.001f;
-    double xoffset = dx * sensitivity;
-    double yoffset = dy * sensitivity;
-    main_camera.cameraTarget.x += xoffset;
-    main_camera.cameraTarget.y += yoffset;
-
-	// Clamp the vertical look angle to prevent flipping
-    if (main_camera.cameraTarget.y > glm::radians(89.9f)) {
-        main_camera.cameraTarget.y = glm::radians(89.9f);
-    }
-    if (main_camera.cameraTarget.y < glm::radians(-89.9f)) {
-        main_camera.cameraTarget.y = glm::radians(-89.9f);
-	}
-
-	main_camera.update();
+	main_camera.cameraMouseMovement((float)xpos, (float)ypos, center_x, center_y, deltaTime);
 } // mouse_callback

@@ -14,19 +14,15 @@ struct key_status {
 	bool up, down, left, right;
 	bool space, shift;
 
-	key_status() : w(false), a(false), s(false), d(false), up(false), down(false), left(false), right(false), space(false), shift(false) {} // key_status ctor
+	key_status() : w(false), a(false), s(false), d(false), up(false), down(false), left(false), right(false), space(false), shift(false) {}
 }; // key_status
 
 struct player {
-	camera* player_camera;
-	transformation transform_data;
 	key_status keys;
 
 	glm::vec3 velocity;
 
-	player(camera* player_camera) : player_camera(player_camera), keys(), velocity(0.0f, 0.0f, 0.0f) {
-		create_identity(&transform_data);
-	} // player ctor
+	player() : keys(), velocity(0.0f, 0.0f, 0.0f) { } 
 }; // player
 
 //static void move_player(player* source, float deltaTime) {

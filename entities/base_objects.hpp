@@ -30,12 +30,16 @@ public:
 			return 1;
 		}
 
+		// Generate the vertex array object
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+
 		// Generate the vertex buffer object
 		glGenBuffers(1, &v_buf);
 		glBindBuffer(GL_ARRAY_BUFFER, v_buf);
 		glBufferData(GL_ARRAY_BUFFER, mesh->vertices.size() * sizeof(vertex), mesh->vertices.data(), GL_STATIC_DRAW);
 
-		// Generate the indices buffer object
+		// Generate the element buffer object
 		glGenBuffers(1, &e_buf);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, e_buf);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indices.size() * sizeof(uint32_t), mesh->indices.data(), GL_STATIC_DRAW);
@@ -66,8 +70,9 @@ public:
 		program = shader_program->handle;
 
 		// Set the shader variable information
-		mvp_uniform = glGetUniformLocation(program, "vp");
+		mvp_uniform = glGetUniformLocation(program, "mvp");
 		v_attr = glGetAttribLocation(program, "in_vertex");
+		c_attr = glGetAttribLocation(program, "in_color");
 		t_attr = glGetAttribLocation(program, "in_texCoord");
 
 		// TODO: Add support for normals and lighting
@@ -115,12 +120,16 @@ public:
 		glUniformMatrix4fv(mvp_uniform, 1, GL_FALSE, glm::value_ptr(mvp));
 
 		// Rebind the buffers
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, e_buf);
 		glBindBuffer(GL_ARRAY_BUFFER, v_buf);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, e_buf);
 
 		// Set the vertex attribute pointers
 		glEnableVertexAttribArray(v_attr);
 		glVertexAttribPointer(v_attr, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, pos));
+
+		// Set the color attribute pointers
+		glEnableVertexAttribArray(c_attr);
+		glVertexAttribPointer(c_attr, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, color));
 
 		// Set the texture attribute pointers
 		glEnableVertexAttribArray(t_attr);
@@ -133,6 +142,10 @@ public:
 		if (mesh->mat.texture->texture_handle != -1) {
 			glDeleteTextures(1, &mesh->mat.texture->texture_handle);
 		}
+
+		if (vao != -1) { glDeleteVertexArrays(1, &vao); }
+		if (v_buf != -1) { glDeleteBuffers(1, &v_buf); }
+		if (e_buf != -1) { glDeleteBuffers(1, &e_buf); }
 	} // loaded_obj::deinit
 }; // loaded_obj
 

@@ -34,7 +34,7 @@ struct vertex { // 32 bytes: texCoords is 24 bytes offset into the struct
 	glm::vec3 color;
 	glm::vec2 texCoord;
 
-	vertex() : pos(0.0f), color(1.0f), texCoord(0.0f) {}
+	vertex() : pos(glm::vec3(0.0f, 0.0f, 0.0f)), color(glm::vec3(1.0f, 1.0f, 1.0f)), texCoord(glm::vec2(0.0f, 0.0f)) {}
 
 	bool operator==(const vertex& other) const {
 		return pos == other.pos && color == other.color && texCoord == other.texCoord;
