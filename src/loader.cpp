@@ -49,7 +49,7 @@ bool load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
 				attrib.vertices[3 * index.vertex_index + 2]
 			};
 
-			vert.color = { 0.8f, 0.3f, 0.5f };
+			vert.color = { 1.0f, 1.0f, 1.0f };
 
 			vert.texCoord = {
 				attrib.texcoords[2 * index.texcoord_index + 0],

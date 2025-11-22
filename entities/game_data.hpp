@@ -58,9 +58,9 @@ struct material {
 }; // material
 
 struct obj_mesh {
+	material mat;
 	std::vector<vertex> vertices;
 	std::vector<uint32_t> indices;
-	material mat;
 
 	obj_mesh() : mat() {
 		vertices = std::vector<vertex>();
@@ -83,19 +83,16 @@ struct model_data {
 	glm::vec3 pos;
 	glm::quat rot;
 	glm::vec3 scale;
-
-	// Start position, rotation, and scale for animations
-	glm::vec3 start_pos;
-	glm::quat start_rot;
-	glm::vec3 start_scale;
 }; // model_data
 
 // Object Data
 class obj_data {
 public:
-	GLuint program, model_uniform, view_uniform, projection_uniform;
-	GLuint  v_attr, t_attr, c_attr, v_buf, c_buf, e_buf; // vertex attribute, texture attribute, color attribute, vertex buffer, color buffer, element buffer
+	GLuint program;
+	GLuint model_uniform, view_uniform, projection_uniform;
 	GLuint vao; // vertex array object
+	GLuint v_attr, t_attr, c_attr; // vertex attribute, texture attribute, color attribute
+	GLuint v_buf, c_buf, e_buf; // vertex buffer, color buffer, element buffer
 
 	//std::vector<model_data> models; TODO: Change this to probably use uniforms
 	obj_mesh* mesh; //TODO: Add support for UVs for multiple textures
