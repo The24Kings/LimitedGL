@@ -46,7 +46,7 @@ public:
 		return 0;
 	}
 
-	void draw(glm::mat4 vp) override {
+	void draw(glm::mat4 model, glm::mat4 view, glm::mat4 projection) override {
 		glUseProgram(program);
 
 		// Rebind the buffers

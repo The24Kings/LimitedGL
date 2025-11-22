@@ -70,7 +70,10 @@ public:
 		program = shader_program->handle;
 
 		// Set the shader variable information
-		mvp_uniform = glGetUniformLocation(program, "mvp");
+		model_uniform = glGetUniformLocation(program, "model");
+		view_uniform = glGetUniformLocation(program, "view");
+		projection_uniform = glGetUniformLocation(program, "projection");
+
 		v_attr = glGetAttribLocation(program, "in_vertex");
 		c_attr = glGetAttribLocation(program, "in_color");
 		t_attr = glGetAttribLocation(program, "in_texCoord");
@@ -83,7 +86,7 @@ public:
 		return 0;
 	} // loaded_obj::init
 
-	void draw(glm::mat4 mvp) override {
+	void draw(glm::mat4 model, glm::mat4 view, glm::mat4 projection) override {
 		if (!mesh || mesh->vertices.empty() || mesh->indices.empty()) {
 			printf(RED("Mesh data is not properly initialized.").c_str());
 
@@ -117,7 +120,9 @@ public:
 		glBindTexture(GL_TEXTURE_2D, mesh->mat.texture->texture_handle);
 		
 		// Set the model view projection matrix
-		glUniformMatrix4fv(mvp_uniform, 1, GL_FALSE, glm::value_ptr(mvp));
+		glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(view_uniform, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(projection_uniform, 1, GL_FALSE, glm::value_ptr(projection));
 
 		// Rebind the buffers
 		glBindBuffer(GL_ARRAY_BUFFER, v_buf);

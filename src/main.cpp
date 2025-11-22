@@ -125,7 +125,6 @@ int main(void) {
     glm::mat4 model = glm::identity<glm::mat4>();
     glm::mat4 view = glm::identity<glm::mat4>();
     glm::mat4 projection = glm::identity<glm::mat4>();
-	glm::mat4 mvp = glm::identity<glm::mat4>();
 
     while (!glfwWindowShouldClose(window)) {
 		auto start = glfwGetTime();
@@ -156,11 +155,9 @@ int main(void) {
 		model = glm::mat4(1.0f);
 		view = main_camera.getViewMatrix();
         projection = glm::perspective(glm::radians(main_frustum.fovDegrees), (float)SCRN_WIDTH / (float)SCRN_HEIGHT, main_frustum.near_plane, main_frustum.far_plane);
-		
-        mvp = projection * view * model; // Apply the transformations from the player
 
 		for (obj_data* obj : objects) {
-			obj->draw(mvp);
+			obj->draw(model, view, projection);
 		}
 
 		/* Swap front and back buffers */

@@ -93,14 +93,15 @@ struct model_data {
 // Object Data
 class obj_data {
 public:
-	GLuint program, mvp_uniform, models_buf, v_attr, t_attr, c_attr, v_buf, c_buf, e_buf; // model view projection uniform, models buffer, vertex attribute, texture attribute, color attribute, vertex buffer, color buffer, element buffer, texture
+	GLuint program, model_uniform, view_uniform, projection_uniform;
+	GLuint  v_attr, t_attr, c_attr, v_buf, c_buf, e_buf; // vertex attribute, texture attribute, color attribute, vertex buffer, color buffer, element buffer
 	GLuint vao; // vertex array object
 
 	//std::vector<model_data> models; TODO: Change this to probably use uniforms
 	obj_mesh* mesh; //TODO: Add support for UVs for multiple textures
 
 	virtual int init() { return 0; }
-	virtual void draw(glm::mat4 mvp) {}
+	virtual void draw(glm::mat4 model, glm::mat4 view, glm::mat4 projection) {}
 	virtual void deinit() {}
 	//virtual void add(glm::vec3 pos, glm::quat rot = glm::quat(1, 0, 0, 0), glm::vec3 scale = glm::vec3(1)) { models.push_back({pos, rot, scale, pos, rot, scale}); }
 
@@ -109,7 +110,7 @@ public:
 
 	virtual ~obj_data() { deinit(); }
 
-	obj_data() : program(-1), mvp_uniform(-1), models_buf(-1), v_attr(-1), t_attr(-1), c_attr(-1), v_buf(-1), c_buf(-1), e_buf(-1), vao(-1) {
+	obj_data() : program(-1), model_uniform(-1), view_uniform(-1), projection_uniform(-1), v_attr(-1), t_attr(-1), c_attr(-1), v_buf(-1), c_buf(-1), e_buf(-1), vao(-1) {
 		//models = std::vector<model_data>();
 		mesh = new obj_mesh();
 	}
