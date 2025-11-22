@@ -10,22 +10,21 @@
 
 class loaded_obj : virtual public obj_data {
 public:
-	const char* texture_file;
-	const char* object_file;
-	const char* objBaseDir;
+	std::string texture_file;
+	std::string object_file;
+	std::string objBaseDir;
 
 	/**
 	* Create a new loaded_obj object
 	*	
 	* @param of The object file
-	* @param bD The base directory of the texture file
 	* @param tf The texture file
 	*/
-	loaded_obj(const char* of, const char* obD, const char* tf) : object_file(of), objBaseDir(obD), texture_file(tf) { } // loaded_obj ctor
+	loaded_obj(std::string of, std::string tf) : object_file(of.c_str()), texture_file(tf.c_str()), objBaseDir(object_file.substr(0, object_file.find('/'))) { } // loaded_obj ctor
 
 	int init() override {
 		// Load obj file
-		if (!load_obj(objBaseDir, object_file, mesh)) {
+		if (!load_obj(objBaseDir.c_str(), object_file.c_str(), mesh)) {
 			printf(RED("Failed to load obj file: %s\n").c_str(), object_file);
 
 			return 1;
@@ -44,7 +43,7 @@ public:
 		// Load and Bind textures
 		texture* tex = new texture();
 
-		if (!load_texture(texture_file, tex)) {
+		if (!load_texture(texture_file.c_str(), tex)) {
 			printf(RED("Failed to load texture: %s\n").c_str(), texture_file);
 
 			return 1;
@@ -79,7 +78,7 @@ public:
 		return 0;
 	} // loaded_obj::init
 
-	void draw(glm::mat4 vp) override {
+	void draw(glm::mat4 mvp) override {
 		if (!mesh || mesh->vertices.empty() || mesh->indices.empty()) {
 			printf(RED("Mesh data is not properly initialized.").c_str());
 
@@ -113,7 +112,7 @@ public:
 		glBindTexture(GL_TEXTURE_2D, mesh->mat.texture->texture_handle);
 		
 		// Set the model view projection matrix
-		glUniformMatrix4fv(mvp_uniform, 1, 0, glm::value_ptr(vp));
+		glUniformMatrix4fv(mvp_uniform, 1, GL_FALSE, glm::value_ptr(mvp));
 
 		// Rebind the buffers
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, e_buf);
@@ -126,16 +125,6 @@ public:
 		// Set the texture attribute pointers
 		glEnableVertexAttribArray(t_attr);
 		glVertexAttribPointer(t_attr, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texCoord));
-
-		// FIXME: Do error callback for opengl
-		// Handle Errors
-		GLenum error = glGetError();
-
-		if (error != GL_NO_ERROR) {
-			printf(RED("OpenGL Error: %d\n").c_str(), error);
-
-			return;
-		}
 
 		glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, NULL);
 	} // loaded_obj::draw

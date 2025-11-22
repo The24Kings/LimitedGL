@@ -56,16 +56,6 @@ public:
 		glVertexAttribPointer(v_attr, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(v_attr);
 
-		// FIXME: Do error callback for opengl
-		// Handle Errors
-		GLenum error = glGetError();
-
-		if (error != GL_NO_ERROR) {
-			printf(RED("OpenGL Error: %d\n").c_str(), error);
-
-			return;
-		}
-
 		// Draw the object
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
