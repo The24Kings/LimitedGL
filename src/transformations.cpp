@@ -25,7 +25,7 @@ void set_parent(transformation* new_parent, transformation* child_transform) {
 */
 void create_identity(transformation* result) {
 	result->position = glm::vec3(0.0f, 0.0f, 0.0f);
-	result->rotation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
+	result->rotation = glm::identity< glm::quat>();
 	result->scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	result->parent = NULL;

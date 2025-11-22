@@ -37,7 +37,8 @@ bool shutdown = false;
 /* Game Data */
 
 std::vector<obj_data*> objects;
-camera main_camera = camera(60.0f, 1.0f, 1000.0f);
+frustum main_frustum = frustum(85.0, 0.1, 100.0);
+camera main_camera = camera(0.0, 0.0, &main_frustum);
 player main_player = player(&main_camera);
 
 /* Frame Data */
@@ -126,15 +127,14 @@ int main(void) {
         }
 
         /* Get the view and projection matrices */
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 projection = raw_perpective(main_camera.fov, width / (float)height, main_camera.near_plane, main_camera.far_plane);
-		glm::mat4 position = get_transform_matrix(&main_player.transform_data);
-		glm::mat4 rotation = glm::mat4_cast(main_player.transform_data.rotation);
+        glm::mat4 model = glm::mat4(1.0);
+        glm::mat4 view = glm::lookAt(main_player.transform_data.position, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+		glm::mat4 projection = glm::perspective(main_camera.camera_frustum->fov, width / (float)height, main_camera.camera_frustum->near_plane, main_camera.camera_frustum->far_plane);
 		
-		glm::mat4 vp = view * projection * rotation * position; // Apply the transformations from the player
+		glm::mat4 mvp = model * view * projection; // Apply the transformations from the player
 
 		for (obj_data* obj : objects) {
-			obj->draw(vp);
+			obj->draw(mvp);
 		}
 
 		/* Swap front and back buffers */

@@ -40,8 +40,8 @@ static glm::quat camera_rotation(player* source) {
 	source->transform_data.rotation = y_rotation * x_rotation; // Rotate the player
 
 	// Update the camera position
-	source->player_camera->transform_data.position = source->transform_data.position + glm::vec3(0.0f, 1.9f, 0.0f); // Eye level
-	source->player_camera->transform_data.rotation = source->transform_data.rotation;
+	//source->player_camera->transform_data.position = source->transform_data.position + glm::vec3(0.0f, 1.9f, 0.0f); // Eye level
+	//source->player_camera->transform_data.rotation = source->transform_data.rotation;
 
 	return y_rotation * x_rotation;
 } // player::rotate_camera
