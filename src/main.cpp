@@ -126,6 +126,7 @@ int main(void) {
     glm::mat4 model = glm::identity<glm::mat4>();
     glm::mat4 view = glm::identity<glm::mat4>();
     glm::mat4 projection = glm::identity<glm::mat4>();
+	glm::mat4 mvp = glm::identity<glm::mat4>();
 
     while (!glfwWindowShouldClose(window)) {
 		auto start = glfwGetTime();
@@ -158,7 +159,7 @@ int main(void) {
         view = glm::lookAt(main_camera.cameraPos, main_camera.cameraPos + main_camera.cameraDirection, main_camera.cameraUp);
 		projection = glm::perspective(main_camera.camera_frustum->fov, SCRN_WIDTH / (float)SCRN_HEIGHT, main_camera.camera_frustum->near_plane, main_camera.camera_frustum->far_plane);
 		
-        glm::mat4 mvp = projection * view * model; // Apply the transformations from the player
+        mvp = projection * view * model; // Apply the transformations from the player
 
 		for (obj_data* obj : objects) {
 			obj->draw(mvp);
