@@ -17,30 +17,33 @@ struct camera {
 	frustum* camera_frustum;
 
 	glm::vec3 cameraPos;
-	glm::vec2 cameraTarget;
+	glm::vec3 cameraTarget;
+	glm::quat cameraRotation;
 
 	glm::vec3 cameraDirection;
 	glm::vec3 cameraRight;
 	glm::vec3 cameraUp;
 
-
-	camera(glm::vec3 pos, glm::vec2 target, frustum* frustum) : cameraPos(pos), cameraTarget(target), camera_frustum(frustum), cameraDirection(glm::vec3(0, 0, 0)) {
+	camera(glm::vec3 pos, glm::vec3 target, frustum* frustum) : 
+		cameraPos(pos), 
+		cameraTarget(target), 
+		camera_frustum(frustum), 
+		cameraDirection(glm::vec3(0, 0, 0)), 
+		cameraRotation(glm::identity<glm::quat>()) 
+	{
 		update();
 	}
 
 	void update() {
-		cameraDirection.x = cosf(glm::radians(cameraTarget.y)) * cosf(glm::radians(cameraTarget.x));
-		cameraDirection.y = sinf(glm::radians(cameraTarget.x));
-		cameraDirection.z = sinf(glm::radians(cameraTarget.y)) * cosf(glm::radians(cameraTarget.x));
-		cameraDirection = glm::normalize(cameraDirection);
+		glm::quat x_rotation = glm::angleAxis(cameraTarget.x, glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::quat y_rotation = glm::angleAxis(cameraTarget.y, glm::vec3(1.0f, 0.0f, 0.0f));
+
+		cameraRotation = x_rotation * y_rotation;
+		cameraDirection = glm::rotate(cameraRotation, glm::vec3(0.0f, 0.0f, -1.0f));
 
 		cameraRight = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), cameraDirection));
 		cameraUp = glm::cross(cameraDirection, cameraRight);
 	}
 }; // camera
-
-//inline glm::mat4 raw_perpective(float fov, float aspect, float near_plane, float far_plane) {
-//	return glm::perspective(glm::radians(fov), aspect, near_plane, far_plane);
-//}
 
 #endif // _CAMERA_HPP

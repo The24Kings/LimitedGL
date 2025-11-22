@@ -38,8 +38,12 @@ bool shutdown = false;
 
 std::vector<obj_data*> objects;
 
+glm::vec3 local_up;
+glm::vec3 local_right;
+glm::vec3 local_forward;
+
 frustum main_frustum = frustum(45.0, 0.1, 100.0);
-camera main_camera = camera(glm::vec3(0.0, 0, 5.0), glm::vec2(0, 0), &main_frustum);
+camera main_camera = camera(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0, 0.0), &main_frustum);
 float camera_speed = 4.5f;
 player main_player = player(&main_camera);
 
@@ -115,12 +119,13 @@ int main(void) {
 		}
 	}
 
-    /* Create Threads */
-	// Movement Thread
-
     /* Loop until the user closes the window */
     glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DEBUG_OUTPUT);
+
+    glm::mat4 model = glm::identity<glm::mat4>();
+    glm::mat4 view = glm::identity<glm::mat4>();
+    glm::mat4 projection = glm::identity<glm::mat4>();
 
     while (!glfwWindowShouldClose(window)) {
 		auto start = glfwGetTime();
@@ -129,29 +134,29 @@ int main(void) {
         glfwPollEvents();
 
 		/* Handle minimized window */
-        if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0)
-        {
-            continue;
-        }
+        if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0) { continue; }
 
 		/* Render Main */
         glClearColor(0, 0, 0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        /* Temporary Player Movement */
-		// TODO: Move towards the direction the camera is facing
-		// FIXME: There is some shenanigans going on with the camera movement, some axis are inverted?
-        if (main_player.keys.w) { main_camera.cameraPos.z -= camera_speed * deltaTime; }
-        if (main_player.keys.s) { main_camera.cameraPos.z += camera_speed * deltaTime; }
-        if (main_player.keys.a) { main_camera.cameraPos.x -= camera_speed * deltaTime; }
-        if (main_player.keys.d) { main_camera.cameraPos.x += camera_speed * deltaTime; }
-		if (main_player.keys.space) { main_camera.cameraPos.y += camera_speed * deltaTime; }
-		if (main_player.keys.shift) { main_camera.cameraPos.y -= camera_speed * deltaTime; }
+        // Local Axis of the player
+        local_right = glm::normalize(glm::vec3(view[0][0], 0, view[2][0]));
+        local_forward = glm::normalize(glm::vec3(view[0][2], 0, view[2][2]));
+
+        // Player Movement
+        // FIXME: There is some shenanigans going on with the camera movement, some axis are inverted?
+        if (main_player.keys.w) { main_camera.cameraPos -= local_forward * camera_speed * (float)deltaTime; }
+        if (main_player.keys.s) { main_camera.cameraPos += local_forward * camera_speed * (float)deltaTime; }
+        if (main_player.keys.a) { main_camera.cameraPos -= local_right * camera_speed * (float)deltaTime; }
+        if (main_player.keys.d) { main_camera.cameraPos += local_right * camera_speed * (float)deltaTime; }
+        if (main_player.keys.space) { main_camera.cameraPos += glm::vec3(0, 1, 0) * camera_speed * (float)deltaTime; }
+        if (main_player.keys.shift) { main_camera.cameraPos -= glm::vec3(0, 1, 0) * camera_speed * (float)deltaTime; }
 
         /* Get the view and projection matrices */
-		glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = glm::lookAt(main_camera.cameraPos, main_camera.cameraPos + main_camera.cameraDirection, main_camera.cameraUp);
-		glm::mat4 projection = glm::perspective(main_camera.camera_frustum->fov, SCRN_WIDTH / (float)SCRN_HEIGHT, main_camera.camera_frustum->near_plane, main_camera.camera_frustum->far_plane);
+		model = glm::mat4(1.0f);
+        view = glm::lookAt(main_camera.cameraPos, main_camera.cameraPos + main_camera.cameraDirection, main_camera.cameraUp);
+		projection = glm::perspective(main_camera.camera_frustum->fov, SCRN_WIDTH / (float)SCRN_HEIGHT, main_camera.camera_frustum->near_plane, main_camera.camera_frustum->far_plane);
 		
         glm::mat4 mvp = projection * view * model; // Apply the transformations from the player
 
@@ -167,9 +172,6 @@ int main(void) {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 	} // Game Loop
-
-	/* Join the threads */
-	//movement_thread.join();
 
 	/* Deinitialize objects */
     glfwDestroyWindow(window);
@@ -222,17 +224,25 @@ static void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	// Clamp the mouse position to the window bounds
     double center_x = SCRN_WIDTH / 2.0f;
     double center_y = SCRN_HEIGHT / 2.0f;
-    double dx = xpos - center_x;
-    double dy = ypos - center_y;
+	double dx = center_x - xpos; //FIXME: Inverted axis?
+	double dy = center_y - ypos; //FIXME: Inverted axis?
 
     glfwSetCursorPos(window, center_x, center_y);
 
-    float sensitivity = 0.1f;
+	// Apply mouse movement to camera target
+    float sensitivity = 0.001f;
     double xoffset = dx * sensitivity;
     double yoffset = dy * sensitivity;
-	// FIXME: The axes need to be inverted here for some reason, probably something to do with trigonometry in camera update
-    main_camera.cameraTarget.x += -yoffset;
-    main_camera.cameraTarget.y += xoffset;
+    main_camera.cameraTarget.x += xoffset;
+    main_camera.cameraTarget.y += yoffset;
+
+	// Clamp the vertical look angle to prevent flipping
+    if (main_camera.cameraTarget.y > glm::radians(89.9f)) {
+        main_camera.cameraTarget.y = glm::radians(89.9f);
+    }
+    if (main_camera.cameraTarget.y < glm::radians(-89.9f)) {
+        main_camera.cameraTarget.y = glm::radians(-89.9f);
+	}
 
 	main_camera.update();
 } // mouse_callback
