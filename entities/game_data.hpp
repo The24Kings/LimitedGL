@@ -20,16 +20,12 @@
 
 /* Globals */
 
-EXTERN int width INIT(1280);
-EXTERN int height INIT(720);
+EXTERN int SCRN_WIDTH INIT(1280);
+EXTERN int SCRN_HEIGHT INIT(720);
 
 EXTERN bool shutdown INIT(false);
 
-EXTERN double target_framerate INIT(60);
-EXTERN double framerate INIT(0.0);
 EXTERN double deltaTime INIT(1.0);
-EXTERN uint64_t target_frame_time INIT(16000000); // In nanoseconds
-EXTERN uint64_t elapsed_time INIT(target_frame_time);
 
 /* Game Strutures */
 
@@ -104,7 +100,7 @@ public:
 	obj_mesh* mesh; //TODO: Add support for UVs for multiple textures
 
 	virtual int init() { return 0; }
-	virtual void draw(glm::mat4 vp) {}
+	virtual void draw(glm::mat4 mvp) {}
 	virtual void deinit() {}
 	//virtual void add(glm::vec3 pos, glm::quat rot = glm::quat(1, 0, 0, 0), glm::vec3 scale = glm::vec3(1)) { models.push_back({pos, rot, scale, pos, rot, scale}); }
 
