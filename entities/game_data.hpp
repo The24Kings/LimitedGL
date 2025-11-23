@@ -89,11 +89,11 @@ struct model_data {
 class obj_data {
 public:
 	GLuint program;
-	GLuint model_uniform, view_uniform, projection_uniform, light_uniform;
+	GLuint model_uniform, view_uniform, projection_uniform;
 	GLuint vao; // vertex array object
 	GLuint v_attr, t_attr, c_attr, n_attr; // vertex attribute, texture attribute, color attribute, normals attribute
 	GLuint v_buf, c_buf, e_buf; // vertex buffer, color buffer, element buffer
-	GLuint a_uniform; // ambient light uniform
+	GLuint light_uniform, a_uniform; // ambient light uniform
 
 	//std::vector<model_data> models; TODO: Change this to probably use uniforms
 	obj_mesh* mesh;

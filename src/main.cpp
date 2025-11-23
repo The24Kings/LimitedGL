@@ -153,7 +153,7 @@ int main(void) {
 
         /* Get the view and projection matrices */
 		model = glm::mat4(1.0f);
-		view = main_camera.getViewMatrix();
+		view = main_camera.getCameraViewMatrix();
         projection = glm::perspective(glm::radians(main_frustum.fovDegrees), (float)SCRN_WIDTH / (float)SCRN_HEIGHT, main_frustum.near_plane, main_frustum.far_plane);
 
 		for (obj_data* obj : objects) {

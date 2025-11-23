@@ -38,9 +38,30 @@ struct camera {
 	camera(glm::vec3 pos = glm::vec3(0.0f), float pitch = 0.0f, float yaw = -90.0f) : cameraPos(pos), pitch(pitch), yaw(yaw) {
 		update();
 	}
+	
+	/**
+	* @brief Get the camera view matrix
+	*/
+	inline glm::mat4 getCameraViewMatrix() const {
+		return getCameraRotation() * getCameraPositionMatrix();
+	}
 
-	inline glm::mat4 getViewMatrix() const {
-		return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	/**
+	* @brief Get the camera world matrix
+	*/
+	inline glm::mat4 getCameraWorldMatrix() const {
+		return getCameraPositionMatrix() * getCameraRotation();
+	}
+
+	/**
+	* @brief Get the camera position matrix (local)
+	*/
+	inline glm::mat4 getCameraPositionMatrix() const {
+		return glm::translate(glm::mat4(1.0f), -cameraPos); // Note the negative sign for moving the world opposite to the camera position
+	}
+
+	inline glm::mat4 getCameraRotation() const {
+		return glm::mat4_cast(glm::angleAxis(glm::radians(pitch), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::angleAxis(glm::radians(yaw), glm::vec3(0.0f, 1.0f, 0.0f)));
 	}
 
 	void cameraMoveForward(float deltaTime) {
@@ -88,15 +109,10 @@ struct camera {
 	}
 
 	void update() {
-		glm::vec3 front = glm::vec3(0.0f);
-
-		front.x = cosf(glm::radians(yaw)) * cosf(glm::radians(-pitch));
-		front.y = sinf(glm::radians(-pitch));
-		front.z = sinf(glm::radians(yaw)) * cosf(glm::radians(-pitch));
-		cameraFront = glm::normalize(front);
-
-		cameraRight = glm::normalize(glm::cross(cameraFront, glm::vec3(0.0f, 1.0f, 0.0f)));
-		cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
+		const glm::mat4 transposed = glm::transpose(getCameraRotation());
+		cameraFront = -transposed[2];
+		cameraRight = transposed[0];
+		cameraUp = transposed[1];
 	}
 }; // camera
 

@@ -65,7 +65,7 @@ public:
 
 		shader_program* shader_program = create_shader_program("shaders/loaded_obj_vertex_shader.glsl", nullptr, nullptr, nullptr, "shaders/loaded_obj_fragment_shader.glsl");
 
-		if (shader_program == nullptr) { // Check if the program was created successfully
+		if (!shader_program) { // Check if the program was created successfully
 			printf(RED("Failed to create shader program\n").c_str());
 
 			return 1;
@@ -129,7 +129,7 @@ public:
 		// Global lighting parameters
 		glUniform1f(a_uniform, mat->ambient);
 
-		glm::vec3 light_pos = glm::vec3(1.2f, 3.0f, 5.0f); // FIXME: This needs to be pulled in from the scene data
+		glm::vec3 light_pos = glm::vec3(2.2f, 5.0f, 5.0f); // FIXME: This needs to be pulled in from the scene data
 		glUniform3fv(light_uniform, 1, glm::value_ptr(light_pos));
 
 		// Rebind the buffers
