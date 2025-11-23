@@ -8,6 +8,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <GLEW/glew.h>
 #include <vector>
+#include <string>
 
 /* Global shenanigans (so extern is used when defined outside main) */
 #ifdef MAIN
@@ -29,7 +30,7 @@ EXTERN double deltaTime INIT(1.0);
 
 /* Game Strutures */
 
-struct vertex { // 32 bytes: texCoords is 24 bytes offset into the struct
+struct vertex {
 	glm::vec3 pos;
 	glm::vec3 color;
 	glm::vec2 texCoord;
@@ -51,31 +52,25 @@ struct texture {
 }; // texture
 
 struct material {
-	texture* texture;
 	float ambient, diffuse, specular, shininess;
 
-	material() : texture(nullptr), ambient(0.0f), diffuse(0.0f), specular(0.0f), shininess(0.0f) { }
+	material() : ambient(0.0f), diffuse(0.0f), specular(0.0f), shininess(0.0f) {}
 }; // material
 
 struct obj_mesh {
-	material mat;
 	std::vector<vertex> vertices;
 	std::vector<uint32_t> indices;
 
-	obj_mesh() : mat() {
-		vertices = std::vector<vertex>();
-		indices = std::vector<uint32_t>();
-	}
+	obj_mesh() : vertices(std::vector<vertex>()), indices(std::vector<uint32_t>()) { }
 }; // obj_mesh
 
-// ((vec3 ^ vec3 << 1) >> 1) ^ (vec2 << 1)
-template<> struct std::hash<vertex> { // Hash function for vertex struct
+template<> struct std::hash<vertex> {
 	size_t operator()(vertex const& v) const {
-		return ((std::hash<glm::vec3>()(v.pos) ^ (std::hash<glm::vec3>()(v.color) << 1)) >> 1) ^ (std::hash<glm::vec2>()(v.texCoord) << 1);
+		return ((std::hash<glm::vec3>()(v.pos) ^ (std::hash<glm::vec3>()(v.color) << 1)) >> 1) ^ (std::hash<glm::vec2>()(v.texCoord) << 1); // ((vec3 ^ vec3 << 1) >> 1) ^ (vec2 << 1)
 	}
 };
 
-bool load_obj(const char* baseDir, const char* filename, obj_mesh* mesh);
+void load_obj(std::string baseDir, std::string filename, obj_mesh* mesh);
 bool load_texture(const char* filename, texture* tex);
 
 struct model_data {
@@ -95,7 +90,9 @@ public:
 	GLuint v_buf, c_buf, e_buf; // vertex buffer, color buffer, element buffer
 
 	//std::vector<model_data> models; TODO: Change this to probably use uniforms
-	obj_mesh* mesh; //TODO: Add support for UVs for multiple textures
+	obj_mesh* mesh;
+	material* mat;
+	texture* tex;
 
 	virtual int init() { return 0; }
 	virtual void draw(glm::mat4 model, glm::mat4 view, glm::mat4 projection) {}
@@ -105,11 +102,29 @@ public:
 	virtual void move(double dt) {}
 	virtual void animate(double dt) {}
 
-	virtual ~obj_data() { deinit(); }
+	virtual ~obj_data() { 
+		deinit();
+
+		// Clean up mesh and material
+		if (mesh) {
+			delete mesh;
+			mesh = nullptr;
+		}
+		if (mat) {
+			delete mat;
+			mat = nullptr;
+		}
+		if (tex) {
+			delete tex;
+			tex = nullptr;
+		}
+	}
 
 	obj_data() : program(-1), model_uniform(-1), view_uniform(-1), projection_uniform(-1), v_attr(-1), t_attr(-1), c_attr(-1), v_buf(-1), c_buf(-1), e_buf(-1), vao(-1) {
 		//models = std::vector<model_data>();
 		mesh = new obj_mesh();
+		mat = new material();
+		tex = new texture();
 	}
 }; // obj_data
 

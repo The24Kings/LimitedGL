@@ -42,8 +42,8 @@ glm::vec3 local_up;
 glm::vec3 local_right;
 glm::vec3 local_forward;
 
-frustum main_frustum = frustum(45.0, 0.1, 100.0);
-camera main_camera = camera(glm::vec3(0.0, 0.0, 5.0));
+frustum main_frustum = frustum(45.0f, 0.1f, 100.0f);
+camera main_camera = camera(glm::vec3(0.0f, 0.0f, 5.0f));
 player main_player = player();
 
 /* Frame Data */

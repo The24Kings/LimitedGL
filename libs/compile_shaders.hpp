@@ -49,20 +49,19 @@ struct shader_program {
  * @return True if the shader was read successfully, false if not
 */
 static bool read_shader(char** buffer, const char* filename) { //TODO: change this to some kind of compiler to read #include statements in the shader
-	// Read in the shader source from a file
-	FILE* file = NULL;
+	FILE* file = nullptr;
 	uint64_t file_size = 0;
 	size_t readlen = 0;
-	char* temp_buffer = NULL;
+	char* temp_buffer = nullptr;
 
 	fopen_s(&file, filename, "r");
 
-	if (file == NULL) {
+	if (!file) {
 		fprintf(stderr, RED("Failed to open file %s\n").c_str(), filename);
 		return false;
 	}
 
-	// Allocate memory for the buffer
+	// Find the size of the file
 	fseek(file, 0, SEEK_END);
 	file_size = ftell(file);
 	rewind(file);
@@ -75,7 +74,7 @@ static bool read_shader(char** buffer, const char* filename) { //TODO: change th
 
 	temp_buffer = (char*)malloc(file_size);
 
-	if (temp_buffer == NULL) {
+	if (!temp_buffer) {
 		fprintf(stderr, RED("Failed to allocate memory for buffer\n").c_str());
 		return false;
 	}
@@ -84,7 +83,7 @@ static bool read_shader(char** buffer, const char* filename) { //TODO: change th
 	readlen = fread(temp_buffer, 1, file_size, file);
 
 	// Check if the file was read successfully
-	if (readlen == 0) {
+	if (!readlen) {
 		fprintf(stderr, RED("Failed to read file %s\n").c_str(), filename);
 		return false;
 	}
@@ -94,7 +93,9 @@ static bool read_shader(char** buffer, const char* filename) { //TODO: change th
 	printf(YELLOW("Read %zu bytes from %s\n").c_str(), readlen, filename);
 	puts(temp_buffer);
 
-	*buffer = temp_buffer; // Set the buffer
+	// Free up memory and set the buffer
+	*buffer = temp_buffer;
+	temp_buffer = NULL;
 
 	fclose(file);
 
@@ -112,13 +113,12 @@ static bool read_shader(char** buffer, const char* filename) { //TODO: change th
 static shader_source* create_shader_source(GLuint type, const char* source) {
 	shader_source* shader = new shader_source(); // Allocate memory for the shader
 	uint64_t file_size = 0;
-	char* buffer = NULL;
+	char* buffer = nullptr;
 
-	if (source == NULL) {
+	if (!source)
 		return nullptr;
-	}
 
-	if (shader == NULL) {
+	if (!shader) {
 		fprintf(stderr, RED("Failed to allocate memory for shader_source\n").c_str());
 		return nullptr;
 	}
@@ -134,13 +134,15 @@ static shader_source* create_shader_source(GLuint type, const char* source) {
 	glCompileShader(handle);
 	glGetShaderInfoLog(handle, BUFFER_SIZE, NULL, shader->error);
 
+	free(buffer);
+
 	// Check if the shader compiled successfully
 	GLint isCompiled = 0;
 	glGetShaderiv(handle, GL_COMPILE_STATUS, &isCompiled);
 
 	if (!isCompiled) {
 		// Clear up GPU memory
-		puts(RED("Compile Failed\n").c_str());
+		printf(RED("Compile Failed: %s\n").c_str(), shader->error);
 
 		glDeleteShader(handle);
 

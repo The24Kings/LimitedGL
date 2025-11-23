@@ -8,6 +8,9 @@
 #include "utils.hpp"
 #include "game_data.hpp"
 
+/**
+* @brief A loaded object from an OBJ file with a texture
+*/
 class loaded_obj : virtual public obj_data {
 public:
 	std::string texture_file;
@@ -16,17 +19,20 @@ public:
 
 	/**
 	* Create a new loaded_obj object
-	*	
+	*
 	* @param of The object file
 	* @param tf The texture file
 	*/
-	loaded_obj(std::string of, std::string tf) : object_file(of.c_str()), texture_file(tf.c_str()), objBaseDir(object_file.substr(0, object_file.find('/'))) { } // loaded_obj ctor
+	loaded_obj(std::string of, std::string tf) : object_file(of), texture_file(tf), objBaseDir(object_file.substr(0, object_file.find('/'))) {
+		mat = new material();
+		mesh = new obj_mesh();
+	}
 
 	int init() override {
-		// Load obj file
-		if (!load_obj(objBaseDir.c_str(), object_file.c_str(), mesh)) {
-			printf(RED("Failed to load obj file: %s\n").c_str(), object_file);
-
+		try {
+			load_obj(objBaseDir, object_file, mesh);
+		} catch (std::runtime_error &e) {
+			printf(RED("Failed to load obj file: %s\n").c_str(), e.what());
 			return 1;
 		}
 
@@ -45,17 +51,13 @@ public:
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->indices.size() * sizeof(uint32_t), mesh->indices.data(), GL_STATIC_DRAW);
 
 		// Load and Bind textures
-		texture* tex = new texture();
-
 		if (!load_texture(texture_file.c_str(), tex)) {
 			printf(RED("Failed to load texture: %s\n").c_str(), texture_file);
 
 			return 1;
 		}
 
-		this->mesh->mat.texture = tex;
-
-		printf(BLUE("Texture Handle: %d\n").c_str(), this->mesh->mat.texture->texture_handle);
+		printf(BLUE("Texture Handle: %d\n").c_str(), tex->texture_handle);
 
 		// TODO: Change this to implement the hash table for one compiled shader program if they share the same shaders
 
@@ -117,7 +119,7 @@ public:
 
 		// Texture
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, mesh->mat.texture->texture_handle);
+		glBindTexture(GL_TEXTURE_2D, tex->texture_handle);
 		
 		// Set the model view projection matrix
 		glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
@@ -140,12 +142,12 @@ public:
 		glEnableVertexAttribArray(t_attr);
 		glVertexAttribPointer(t_attr, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texCoord));
 
-		glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, NULL);
+		glDrawElements(GL_TRIANGLES, (GLsizei)mesh->indices.size(), GL_UNSIGNED_INT, NULL);
 	} // loaded_obj::draw
 
 	void deinit() override {
-		if (mesh->mat.texture->texture_handle != -1) {
-			glDeleteTextures(1, &mesh->mat.texture->texture_handle);
+		if (tex->texture_handle != -1) {
+			glDeleteTextures(1, &tex->texture_handle);
 		}
 
 		if (vao != -1) { glDeleteVertexArrays(1, &vao); }

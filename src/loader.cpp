@@ -14,29 +14,18 @@
  *
  * @param baseDir The base directory of the obj file
  * @param filename The name of the obj file
- * @param vertices The vertices of the obj file
- * @param indices The indices of the obj file
- * @param texScale The scale of the texture
+ * @param mesh The mesh object to load the obj data into
  *
- * @return 0 if successful, 1 if not
+ * @return bool True if the obj file was loaded successfully; throw runtime_error on failure
  */
-bool load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
-	tinyobj::attrib_t attrib;
+void load_obj(std::string baseDir, std::string filename, obj_mesh* mesh) {
+	tinyobj::attrib_t v_attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
 	std::string err;
 
-	// Correct the base directory
-	std::string baseDirStr = baseDir;
-
-	if (baseDirStr.empty()) {
-		baseDir = "./";
-	}
-
-	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, filename, baseDirStr.c_str())) {
+	if (!tinyobj::LoadObj(&v_attrib, &shapes, &materials, &err, filename.c_str(), baseDir.c_str())) {
 		throw std::runtime_error(err);
-
-		return false;
 	}
 
 	for (const auto& shape : shapes) {
@@ -44,16 +33,16 @@ bool load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
 			vertex vert = {};
 
 			vert.pos = {
-				attrib.vertices[3 * index.vertex_index + 0],
-				attrib.vertices[3 * index.vertex_index + 1],
-				attrib.vertices[3 * index.vertex_index + 2]
+				v_attrib.vertices[3 * index.vertex_index + 0],
+				v_attrib.vertices[3 * index.vertex_index + 1],
+				v_attrib.vertices[3 * index.vertex_index + 2]
 			};
 
 			vert.color = { 1.0f, 1.0f, 1.0f };
 
 			vert.texCoord = {
-				attrib.texcoords[2 * index.texcoord_index + 0],
-				1.0f - attrib.texcoords[2 * index.texcoord_index + 1] // Flip the texture (because stb_image.h flips it)
+				v_attrib.texcoords[2 * index.texcoord_index + 0],
+				v_attrib.texcoords[2 * index.texcoord_index + 1]
 			};
 
 			mesh->vertices.push_back(vert);
@@ -62,13 +51,11 @@ bool load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
 	}
 
 	printf(GREEN("\nLoaded obj: %s\n").c_str(), filename);
-	printf("# of vertices  = %d\n", (int)(attrib.vertices.size()) / 3);
-	printf("# of normals   = %d\n", (int)(attrib.normals.size()) / 3);
-	printf("# of texcoords = %d\n", (int)(attrib.texcoords.size()) / 2);
+	printf("# of vertices  = %d\n", (int)(v_attrib.vertices.size()) / 3);
+	printf("# of normals   = %d\n", (int)(v_attrib.normals.size()) / 3);
+	printf("# of texcoords = %d\n", (int)(v_attrib.texcoords.size()) / 2);
 	printf("# of materials = %d\n", (int)materials.size());
 	printf("# of shapes    = %d\n", (int)shapes.size());
-
-	return true;
 } // load_obj
 
 /**
@@ -78,6 +65,8 @@ bool load_obj(const char* baseDir, const char* filename, obj_mesh* mesh) {
  * @param tex The texture object
  */
 bool load_texture(const char* filename, texture* tex) {
+	stbi_set_flip_vertically_on_load(true); // Flip the texture vertically on load
+
 	tex->filename = filename;
 	tex->image_data = stbi_load(filename, &tex->width, &tex->height, 0, STBI_rgb_alpha);
 

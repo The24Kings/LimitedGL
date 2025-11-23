@@ -35,7 +35,7 @@ struct camera {
 	float movementSpeed = 2.5f;
 	float mouseSensitivity = 0.05f;
 
-	camera(glm::vec3 pos = glm::vec3(0, 0, 0), float pitch = 0.0, float yaw = -90.0) : cameraPos(pos), pitch(pitch), yaw(yaw) {
+	camera(glm::vec3 pos = glm::vec3(0.0f), float pitch = 0.0f, float yaw = -90.0f) : cameraPos(pos), pitch(pitch), yaw(yaw) {
 		update();
 	}
 
@@ -60,11 +60,11 @@ struct camera {
 	}
 
 	void cameraMoveUp(float deltaTime) {
-		cameraPos += glm::vec3(0, 1, 0) * movementSpeed * deltaTime;
+		cameraPos += glm::vec3(0.0f, 1.0f, 0.0f) * movementSpeed * deltaTime;
 	}
 
 	void cameraMoveDown(float deltaTime) {
-		cameraPos -= glm::vec3(0, 1, 0) * movementSpeed * deltaTime;
+		cameraPos -= glm::vec3(0.0f, 1.0f, 0.0f) * movementSpeed * deltaTime;
 	}
 
 	void cameraMouseMovement(float xpos, float ypos, float center_x, float center_y, float deltaTime, bool constrainPitch = true) {
@@ -88,14 +88,14 @@ struct camera {
 	}
 
 	void update() {
-		glm::vec3 front = glm::vec3(0, 0, 0);
+		glm::vec3 front = glm::vec3(0.0f);
 
 		front.x = cosf(glm::radians(yaw)) * cosf(glm::radians(-pitch));
 		front.y = sinf(glm::radians(-pitch));
 		front.z = sinf(glm::radians(yaw)) * cosf(glm::radians(-pitch));
 		cameraFront = glm::normalize(front);
 
-		cameraRight = glm::normalize(glm::cross(cameraFront, glm::vec3(0, 1, 0)));
+		cameraRight = glm::normalize(glm::cross(cameraFront, glm::vec3(0.0f, 1.0f, 0.0f)));
 		cameraUp = glm::normalize(glm::cross(cameraRight, cameraFront));
 	}
 }; // camera
