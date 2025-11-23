@@ -34,13 +34,24 @@ struct vertex {
 	glm::vec3 pos;
 	glm::vec3 color;
 	glm::vec2 texCoord;
+	glm::vec3 normal;
 
-	vertex() : pos(glm::vec3(0.0f, 0.0f, 0.0f)), color(glm::vec3(1.0f, 1.0f, 1.0f)), texCoord(glm::vec2(0.0f, 0.0f)) {}
+	vertex() : pos(glm::vec3(0.0f, 0.0f, 0.0f)), color(glm::vec3(1.0f, 1.0f, 1.0f)), texCoord(glm::vec2(0.0f, 0.0f)), normal(glm::vec3(1.0f, 1.0f, 1.0f)) {}
 
 	bool operator==(const vertex& other) const {
-		return pos == other.pos && color == other.color && texCoord == other.texCoord;
+		return pos == other.pos && color == other.color && texCoord == other.texCoord && normal == other.normal;
 	}
 }; // vertex
+
+template<> struct std::hash<vertex> {
+	size_t operator()(vertex const& v) const {
+		return ((
+			(std::hash<glm::vec3>()(v.pos) ^ 
+			(std::hash<glm::vec3>()(v.color) << 1)) >> 1) ^
+			(std::hash<glm::vec2>()(v.texCoord) << 1) >> 1) ^ 
+			(std::hash<glm::vec3>()(v.normal) << 1);
+	}
+};
 
 struct texture {
 	const char* filename;
@@ -64,12 +75,6 @@ struct obj_mesh {
 	obj_mesh() : vertices(std::vector<vertex>()), indices(std::vector<uint32_t>()) { }
 }; // obj_mesh
 
-template<> struct std::hash<vertex> {
-	size_t operator()(vertex const& v) const {
-		return ((std::hash<glm::vec3>()(v.pos) ^ (std::hash<glm::vec3>()(v.color) << 1)) >> 1) ^ (std::hash<glm::vec2>()(v.texCoord) << 1); // ((vec3 ^ vec3 << 1) >> 1) ^ (vec2 << 1)
-	}
-};
-
 void load_obj(std::string baseDir, std::string filename, obj_mesh* mesh);
 bool load_texture(const char* filename, texture* tex);
 
@@ -84,10 +89,11 @@ struct model_data {
 class obj_data {
 public:
 	GLuint program;
-	GLuint model_uniform, view_uniform, projection_uniform;
+	GLuint model_uniform, view_uniform, projection_uniform, light_uniform;
 	GLuint vao; // vertex array object
-	GLuint v_attr, t_attr, c_attr; // vertex attribute, texture attribute, color attribute
+	GLuint v_attr, t_attr, c_attr, n_attr; // vertex attribute, texture attribute, color attribute, normals attribute
 	GLuint v_buf, c_buf, e_buf; // vertex buffer, color buffer, element buffer
+	GLuint a_uniform; // ambient light uniform
 
 	//std::vector<model_data> models; TODO: Change this to probably use uniforms
 	obj_mesh* mesh;

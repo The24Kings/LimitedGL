@@ -26,6 +26,8 @@ public:
 	loaded_obj(std::string of, std::string tf) : object_file(of), texture_file(tf), objBaseDir(object_file.substr(0, object_file.find('/'))) {
 		mat = new material();
 		mesh = new obj_mesh();
+
+		mat->ambient = 0.2f;
 	}
 
 	int init() override {
@@ -75,15 +77,13 @@ public:
 		model_uniform = glGetUniformLocation(program, "model");
 		view_uniform = glGetUniformLocation(program, "view");
 		projection_uniform = glGetUniformLocation(program, "projection");
+		light_uniform = glGetUniformLocation(program, "light_pos");
+		a_uniform = glGetUniformLocation(program, "ambient_strength");
 
 		v_attr = glGetAttribLocation(program, "in_vertex");
 		c_attr = glGetAttribLocation(program, "in_color");
 		t_attr = glGetAttribLocation(program, "in_texCoord");
-
-		// TODO: Add support for normals and lighting
-		// vec3 normalvector attribute
-		// vec3 lightdir uniform
-		// vec3 lightcolor uniform
+		n_attr = glGetAttribLocation(program, "in_normal");
 
 		return 0;
 	} // loaded_obj::init
@@ -126,6 +126,12 @@ public:
 		glUniformMatrix4fv(view_uniform, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projection_uniform, 1, GL_FALSE, glm::value_ptr(projection));
 
+		// Global lighting parameters
+		glUniform1f(a_uniform, mat->ambient);
+
+		glm::vec3 light_pos = glm::vec3(1.2f, 3.0f, 5.0f); // FIXME: This needs to be pulled in from the scene data
+		glUniform3fv(light_uniform, 1, glm::value_ptr(light_pos));
+
 		// Rebind the buffers
 		glBindBuffer(GL_ARRAY_BUFFER, v_buf);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, e_buf);
@@ -141,6 +147,10 @@ public:
 		// Set the texture attribute pointers
 		glEnableVertexAttribArray(t_attr);
 		glVertexAttribPointer(t_attr, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texCoord));
+
+		// Set the normal attribute pointers
+		glEnableVertexAttribArray(n_attr);
+		glVertexAttribPointer(n_attr, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, normal));
 
 		glDrawElements(GL_TRIANGLES, (GLsizei)mesh->indices.size(), GL_UNSIGNED_INT, NULL);
 	} // loaded_obj::draw

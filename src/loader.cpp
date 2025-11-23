@@ -32,18 +32,33 @@ void load_obj(std::string baseDir, std::string filename, obj_mesh* mesh) {
 		for (const auto& index : shape.mesh.indices) {
 			vertex vert = {};
 
+			// Position
 			vert.pos = {
 				v_attrib.vertices[3 * index.vertex_index + 0],
 				v_attrib.vertices[3 * index.vertex_index + 1],
 				v_attrib.vertices[3 * index.vertex_index + 2]
 			};
 
+			// Color (default to white)
 			vert.color = { 1.0f, 1.0f, 1.0f };
 
+			// Texture Coordinates
 			vert.texCoord = {
 				v_attrib.texcoords[2 * index.texcoord_index + 0],
 				v_attrib.texcoords[2 * index.texcoord_index + 1]
 			};
+
+			// Normals
+			if (index.normal_index >= 0) {
+				vert.normal = {
+					v_attrib.normals[3 * index.normal_index + 0],
+					v_attrib.normals[3 * index.normal_index + 1],
+					v_attrib.normals[3 * index.normal_index + 2]
+				};
+			}
+			else {
+				vert.normal = glm::vec3(0.0f, 0.0f, 0.0f); // No normal data
+			}
 
 			mesh->vertices.push_back(vert);
 			mesh->indices.push_back(mesh->indices.size());
