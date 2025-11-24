@@ -4,8 +4,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include "transformations.hpp"
-
 struct frustum {
 	float near_plane, far_plane;
 	float fovDegrees;
@@ -35,7 +33,7 @@ struct camera {
 	float movementSpeed = 2.5f;
 	float mouseSensitivity = 0.05f;
 
-	camera(glm::vec3 pos = glm::vec3(0.0f), float pitch = 0.0f, float yaw = -90.0f) : cameraPos(pos), pitch(pitch), yaw(yaw) {
+	camera(glm::vec3 pos = glm::vec3(0.0f), float pitch = 0.0f, float yaw = 0.0f) : cameraPos(pos), pitch(pitch), yaw(yaw) {
 		update();
 	}
 	

@@ -15,32 +15,22 @@
 #define _USE_MATH_DEFINES
 #include<math.h>
 
-#include "utils.hpp"
-#include "transformations.hpp"
 #include "camera.hpp"
 #include "player.hpp"
-#include "compile_shaders.hpp"
-#include "game_data.hpp"
+#include "shader.hpp"
+#include "object.hpp"
 
-#include "base_objects.hpp"
-#include "crosshair.hpp"
+#include "loaded_obj.hpp"
+//#include "crosshair.hpp"
 
 /* Window Data */
 
 int SCRN_WIDTH = 1920;
 int SCRN_HEIGHT = 1080;
 
-/* Engine Data */
-
-bool shutdown = false;
-
 /* Game Data */
 
-std::vector<obj_data*> objects;
-
-glm::vec3 local_up;
-glm::vec3 local_right;
-glm::vec3 local_forward;
+std::vector<object*> objects;
 
 frustum main_frustum = frustum(45.0f, 0.1f, 100.0f);
 camera main_camera = camera(glm::vec3(0.0f, 0.0f, 5.0f));
@@ -103,15 +93,16 @@ int main(void) {
 	glDebugMessageCallback(MessageCallback, 0);
 
     /* Objects */
-	loaded_obj obj = loaded_obj("objects/cube.obj", "objects/textures/brick.jpg");
+    shader* loaded_obj_shader = new shader("shaders/loaded_obj_vertex_shader.glsl", nullptr, nullptr, nullptr, "shaders/loaded_obj_fragment_shader.glsl");
+	loaded_obj obj = loaded_obj("objects/cube.obj", "objects/textures/brick.jpg", loaded_obj_shader);
     objects.push_back(&obj);
 
-    crosshair cross = crosshair();
-    objects.push_back(&cross);
+    /*crosshair cross = crosshair();
+    objects.push_back(&cross);*/
 
 	/* Initialize objects */
-	for (obj_data* obj : objects) {
-        if (obj->init()) {
+	for (object* obj : objects) {
+        if (!obj->init()) {
 			puts(RED("Failed to init objects").c_str());
 
 			return 1;
@@ -125,6 +116,7 @@ int main(void) {
     glm::mat4 model = glm::identity<glm::mat4>();
     glm::mat4 view = glm::identity<glm::mat4>();
     glm::mat4 projection = glm::identity<glm::mat4>();
+    glm::mat4 vp = glm::identity<glm::mat4>();
 
     while (!glfwWindowShouldClose(window)) {
 		auto start = glfwGetTime();
@@ -139,10 +131,6 @@ int main(void) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Local Axis of the player
-        local_right = glm::normalize(glm::vec3(view[0][0], 0, view[2][0]));
-        local_forward = glm::normalize(glm::vec3(view[0][2], 0, view[2][2]));
-
         // Player Movement
         if (main_player.keys.w) { main_camera.cameraMoveForward(deltaTime); }
         if (main_player.keys.s) { main_camera.cameraMoveBackward(deltaTime); }
@@ -155,9 +143,18 @@ int main(void) {
 		model = glm::mat4(1.0f);
 		view = main_camera.getCameraViewMatrix();
         projection = glm::perspective(glm::radians(main_frustum.fovDegrees), (float)SCRN_WIDTH / (float)SCRN_HEIGHT, main_frustum.near_plane, main_frustum.far_plane);
+        vp = projection * view;
 
-		for (obj_data* obj : objects) {
-			obj->draw(model, view, projection);
+		for (object* obj : objects) {
+            auto tmp = (loaded_obj*)obj;
+
+            tmp->m_render->m_mat->set_uniform("model", model);
+            tmp->m_render->m_mat->set_uniform("vp", vp);
+
+            tmp->m_render->m_mat->set_uniform("ambient_strength", 0.2f);
+            tmp->m_render->m_mat->set_uniform("light_pos", glm::vec3(2.0f, 5.0f, 5.0f));
+
+            obj->update(deltaTime);
 		}
 
 		/* Swap front and back buffers */
@@ -195,7 +192,6 @@ static void resize_callback(GLFWwindow* window, int width, int height) {
 */
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        shutdown = true;
         glfwSetWindowShouldClose(window, true);
     }
 

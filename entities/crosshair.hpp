@@ -2,9 +2,9 @@
 #define _CROSSHAIR_HPP
 
 #include "game_data.hpp"
-#include "compile_shaders.hpp"
+#include "shader.hpp"
 
-class crosshair : virtual public obj_data {
+class crosshair : public object {
 public:
 	crosshair() {}
 
@@ -30,7 +30,7 @@ public:
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // Load the vertex buffer object
 
 		// Create the shader program
-		shader_program* shader_program = create_shader_program("shaders/crosshair_vertex_shader.glsl", nullptr, nullptr, nullptr, "shaders/crosshair_fragment_shader.glsl");
+		shader* shader_program = create_shader_program("shaders/crosshair_vertex_shader.glsl", nullptr, nullptr, nullptr, "shaders/crosshair_fragment_shader.glsl");
 
 		if (shader_program == nullptr) { // Check if the program was created successfully
 			printf(RED("Failed to create shader program\n").c_str());
@@ -38,7 +38,7 @@ public:
 			return 1;
 		}
 
-		program = shader_program->handle;
+		program = shader_program->m_handle;
 
 		// Set the uniform locations
 		v_attr = glGetAttribLocation(program, "in_vertex");

@@ -30,12 +30,9 @@
     <ClCompile Include="src\std_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\transformations.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="libs\compile_shaders.hpp">
+    <ClInclude Include="libs\shader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="libs\scolor.hpp">
@@ -44,13 +41,10 @@
     <ClInclude Include="libs\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="entities\game_data.hpp">
+    <ClInclude Include="libs\object.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="entities\base_objects.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\transformations.hpp">
+    <ClInclude Include="entities\loaded_obj.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="entities\crosshair.hpp">
@@ -60,9 +54,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="entities\camera.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -158,19 +158,16 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\std_image.cpp" />
     <ClCompile Include="src\tiny_object_loader.cc" />
-    <ClCompile Include="src\transformations.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="entities\base_objects.hpp" />
+    <ClInclude Include="entities\loaded_obj.hpp" />
     <ClInclude Include="entities\camera.hpp" />
-    <ClInclude Include="libs\compile_shaders.hpp" />
-    <ClInclude Include="entities\game_data.hpp" />
+    <ClInclude Include="libs\shader.hpp" />
+    <ClInclude Include="libs\object.hpp" />
     <ClInclude Include="entities\player.hpp" />
     <ClInclude Include="libs\scolor.hpp" />
     <ClInclude Include="libs\stb_image.h" />
-    <ClInclude Include="libs\transformations.hpp" />
     <ClInclude Include="entities\crosshair.hpp" />
-    <ClInclude Include="libs\utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="objects\cube.mtl">
