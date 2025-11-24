@@ -225,6 +225,8 @@ struct mesh {
 	void draw(material* mat) {
 		upload(mat);
 
+		if (!mat->m_shader->m_isLinked) { throw std::runtime_error("No shader linked to object"); }
+
 		// Texture
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, mat->m_tex->m_handle);
