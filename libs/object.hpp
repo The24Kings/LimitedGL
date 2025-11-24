@@ -82,6 +82,10 @@ struct material {
 		t_attr = glGetAttribLocation(shader->m_handle, "in_texCoord");
 		n_attr = glGetAttribLocation(shader->m_handle, "in_normal");
 	}
+
+	~material() {
+		uniforms.clear();
+	}
 	
 	/**
 	* @brief Set material uniform of given type
@@ -167,6 +171,17 @@ struct mesh {
 
 	mesh() : m_vertices(std::vector<vertex>()), m_indices(std::vector<uint32_t>()), vao(-1), vbo(-1), ibo(-1) {}
 
+	~mesh() {
+		if (isUploaded()) {
+			glDeleteVertexArrays(1, &vao);
+			glDeleteBuffers(1, &vbo);
+			glDeleteBuffers(1, &ibo);
+		}
+
+		m_vertices.clear();
+		m_indices.clear();
+	}
+
 	bool isUploaded() const {
 		return vao != -1;
 	}
@@ -210,6 +225,10 @@ struct mesh {
 	void draw(material* mat) {
 		upload(mat);
 
+		// Texture
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, mat->m_tex->m_handle);
+
 		// Rebind the buffers
 		glBindVertexArray(vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -251,6 +270,11 @@ public:
 		this->m_mesh = new mesh();
 	}
 
+	~render_component() {
+		delete m_mat;
+		delete m_mesh;
+	}
+
 	void update(float dt) override {
 		render();
 	}
@@ -258,21 +282,16 @@ public:
 	void render() {
 		m_mat->use();
 		m_mesh->draw(m_mat);
-
 	}
 }; // render_component
 
 struct object {
 	std::vector<component*> m_components;
 
-	object(object&) = delete;
+	object(object&) = delete; // No copy constructor
 
 	virtual bool init() { return 0; }
 	virtual void deinit() {}
-	//virtual void add(glm::vec3 pos, glm::quat rot = glm::quat(1, 0, 0, 0), glm::vec3 scale = glm::vec3(1)) { models.push_back({pos, rot, scale, pos, rot, scale}); }
-
-	//virtual void move(double dt) {}
-	//virtual void animate(double dt) {}
 	
 	void update(float dt) {
 		for (auto c : m_components) {
@@ -281,9 +300,14 @@ struct object {
 	}
 
 	component* addComponent(component* component) {
+		component->m_object = this;
+
 		m_components.push_back(component);
+
 		return component;
 	}
+
+	object() {}
 
 	~object() { 
 		deinit();
@@ -292,8 +316,6 @@ struct object {
 			delete c;
 		}
 	}
-
-	object() {}
 }; // obj_data
 
 bool load_obj(const char* baseDir, const char* filename, mesh* mesh);

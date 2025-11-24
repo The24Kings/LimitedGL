@@ -58,18 +58,14 @@ MessageCallback(
     GLsizei length,
     const GLchar* message,
     const void* userParam
-) {
-    fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-        type, severity, message
-    );
-}
+);
 
 int main(void) {
     /* Initialize GLFW */
-    glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
+
+    glfwSetErrorCallback(glfw_error_callback);
 
     /* Create a windowed mode window and its OpenGL context */
     GLFWwindow* window = glfwCreateWindow(SCRN_WIDTH, SCRN_HEIGHT, "LimitedGL Engine", NULL, NULL);
@@ -175,6 +171,22 @@ int main(void) {
 
 static void glfw_error_callback(int error, const char* description) {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+}
+
+void GLAPIENTRY
+MessageCallback(
+    GLenum source,
+    GLenum type,
+    GLuint id,
+    GLenum severity,
+    GLsizei length,
+    const GLchar* message,
+    const void* userParam
+) {
+    fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+        type, severity, message
+    );
 }
 
 /**

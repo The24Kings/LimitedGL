@@ -46,8 +46,11 @@ public:
 		return true;
 	} // init
 
-	~loaded_obj() {
-
+	void deinit() override {
+		// Cleanup texture
+		if (m_render->m_mat->m_tex) {
+			delete m_render->m_mat->m_tex;
+		}
 	}
 }; // ~loaded_obj
 
