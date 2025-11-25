@@ -7,7 +7,10 @@
 #include "scolor.hpp"
 #include "stb_image.h"
 #include "tiny_obj_loader.h"
+
 #include "object.hpp"
+#include "vertex.hpp"
+#include "texture.hpp"
 
 /**
  * Load an obj file into a mesh object

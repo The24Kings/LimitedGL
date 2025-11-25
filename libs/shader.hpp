@@ -1,6 +1,7 @@
 #ifndef _COMPLILE_SHADERS_HPP
 #define _COMPLILE_SHADERS_HPP
 
+#include <glm/glm.hpp>
 #include <GLEW/glew.h>
 #include <stdio.h>
 
@@ -8,14 +9,28 @@
 
 constexpr auto BUFFER_SIZE = 1024;
 
-/**
-* @brief Read a shader from a file
- *
- * @param buffer The buffer to read the shader into
- * @param filename The name of the file to read the shader from
- *
- * @return True if the shader was read successfully, false if not
-*/
+enum class uniform_type {
+	t_int,
+	t_float,
+	t_vec3,
+	t_mat3,
+	t_mat4,
+	t_none,
+}; // uniform_type
+
+struct uniform_data {
+	GLuint m_location;
+	uniform_type m_type;
+	char m_buffer[64]; // Size of mat4f
+
+	uniform_data() : m_location(-1), m_type(uniform_type::t_none) {
+		memset(m_buffer, 0, sizeof(m_buffer));
+	};
+
+	uniform_data(uniform_type type, GLuint location) : m_location(location), m_type(type) {
+		memset(m_buffer, 0, sizeof(m_buffer));
+	}
+}; // uniform_data
 
 class shader_source {
 public:

@@ -6,6 +6,7 @@
 
 #include "object.hpp"
 #include "shader.hpp"
+#include "render_component.hpp"
 
 /**
 * @brief A loaded object from an OBJ file with a texture
@@ -26,6 +27,7 @@ public:
 	* @param linked_shader Object shader
 	*/
 	loaded_obj(std::string of, std::string tf, shader* linked_shader) : object_file(of), texture_file(tf), objBaseDir(object_file.substr(0, object_file.find('/'))) {
+		if (!linked_shader->m_isLinked) { throw std::invalid_argument("You must link the shader before using it"); }
 		m_render = (render_component*)addComponent(new render_component(linked_shader));
 
 		m_render->m_mat->m_tex = new texture();

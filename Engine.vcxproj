@@ -42,13 +42,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)libs;$(ProjectDir)include\imgui;$(ProjectDir)include\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)libs;$(ProjectDir)components;$(ProjectDir)entities</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -141,7 +141,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)libs;$(ProjectDir)components;$(ProjectDir)entities</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -162,12 +162,16 @@
   <ItemGroup>
     <ClInclude Include="entities\loaded_obj.hpp" />
     <ClInclude Include="entities\camera.hpp" />
+    <ClInclude Include="libs\material.hpp" />
+    <ClInclude Include="libs\mesh.hpp" />
     <ClInclude Include="libs\shader.hpp" />
     <ClInclude Include="libs\object.hpp" />
     <ClInclude Include="entities\player.hpp" />
     <ClInclude Include="libs\scolor.hpp" />
     <ClInclude Include="libs\stb_image.h" />
     <ClInclude Include="entities\crosshair.hpp" />
+    <ClInclude Include="libs\texture.hpp" />
+    <ClInclude Include="libs\vertex.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="objects\cube.mtl">
