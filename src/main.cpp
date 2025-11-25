@@ -102,7 +102,7 @@ int main(void) {
     loaded_obj obj = loaded_obj("objects/cube.obj", "objects/textures/brick.jpg", loaded_obj_shader);
     objects.push_back(&obj);
 
-    crosshair cross = crosshair(crosshair_shader);
+    //crosshair cross = crosshair(crosshair_shader);
     //objects.push_back(&cross);
 
 	/* Initialize objects */
