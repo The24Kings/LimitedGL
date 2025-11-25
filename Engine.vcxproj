@@ -160,6 +160,9 @@
     <ClCompile Include="src\tiny_object_loader.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="components\component_base.hpp" />
+    <ClInclude Include="components\render_component.hpp" />
+    <ClInclude Include="components\transform_component.hpp" />
     <ClInclude Include="entities\loaded_obj.hpp" />
     <ClInclude Include="entities\camera.hpp" />
     <ClInclude Include="libs\material.hpp" />
