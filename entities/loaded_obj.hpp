@@ -6,7 +6,7 @@
 
 #include "object.hpp"
 #include "shader.hpp"
-#include "render_component.hpp"
+#include "render_3d_component.hpp"
 
 /**
 * @brief A loaded object from an OBJ file with a texture
@@ -17,7 +17,7 @@ public:
 	std::string object_file;
 	std::string objBaseDir;
 
-	render_component* m_render;
+	render_3d_component* m_render;
 
 	/**
 	* Create a new loaded_obj object
@@ -28,12 +28,12 @@ public:
 	*/
 	loaded_obj(std::string of, std::string tf, shader* linked_shader) : object_file(of), texture_file(tf), objBaseDir(object_file.substr(0, object_file.find('/'))) {
 		if (!linked_shader->m_isLinked) { throw std::invalid_argument("You must link the shader before using it"); }
-		m_render = (render_component*)addComponent(new render_component(linked_shader));
 
-		m_render->m_mat->m_tex = new texture();
+		m_render = (render_3d_component*)addComponent(new render_3d_component(linked_shader, new texture()));
 	}
 
 	bool init() override {
+		// Load OBJ file
 		if (!load_obj(objBaseDir.c_str(), object_file.c_str(), m_render->m_mesh)) {
 			printf(RED("Failed to load obj file\n").c_str());
 			return false;
@@ -45,6 +45,14 @@ public:
 			return false;
 		}
 
+		// Set attribute locations
+		GLuint s_handle = m_render->m_mat->m_shader->m_handle;
+
+		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::VERTEX), glGetAttribLocation(s_handle, vertexAttr(vertex_attr::VERTEX)));
+		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::COLOR), glGetAttribLocation(s_handle, vertexAttr(vertex_attr::COLOR)));
+		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::TEXCOORD), glGetAttribLocation(s_handle, vertexAttr(vertex_attr::TEXCOORD)));
+		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::NORMAL), glGetAttribLocation(s_handle, vertexAttr(vertex_attr::NORMAL)));
+
 		return true;
 	} // init
 
@@ -53,7 +61,7 @@ public:
 		if (m_render->m_mat->m_tex) {
 			delete m_render->m_mat->m_tex;
 		}
-	}
-}; // ~loaded_obj
+	} // deinit
+}; // loaded_obj
 
 #endif // _BASE_OBJECTS_HPP

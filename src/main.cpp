@@ -90,17 +90,20 @@ int main(void) {
 
     /* Objects */
     shader* loaded_obj_shader = new shader();
-
     loaded_obj_shader->add(GL_VERTEX_SHADER, "shaders/loaded_obj_vertex_shader.glsl");
     loaded_obj_shader->add(GL_FRAGMENT_SHADER, "shaders/loaded_obj_fragment_shader.glsl");
-
     loaded_obj_shader->link();
+
+    shader* crosshair_shader = new shader();
+    crosshair_shader->add(GL_VERTEX_SHADER, "shaders/crosshair_vertex_shader.glsl");
+    crosshair_shader->add(GL_FRAGMENT_SHADER, "shaders/crosshair_fragment_shader.glsl");
+    crosshair_shader->link();
 	
     loaded_obj obj = loaded_obj("objects/cube.obj", "objects/textures/brick.jpg", loaded_obj_shader);
     objects.push_back(&obj);
 
-    /*crosshair cross = crosshair();
-    objects.push_back(&cross);*/
+    crosshair cross = crosshair(crosshair_shader);
+    //objects.push_back(&cross);
 
 	/* Initialize objects */
 	for (object* obj : objects) {
@@ -148,13 +151,8 @@ int main(void) {
         vp = projection * view;
 
 		for (object* obj : objects) {
-            auto tmp = (loaded_obj*)obj;
-
-            tmp->m_render->m_mat->set_uniform("model", model);
-            tmp->m_render->m_mat->set_uniform("vp", vp);
-
-            tmp->m_render->m_mat->set_uniform("ambient_strength", 0.2f);
-            tmp->m_render->m_mat->set_uniform("light_pos", glm::vec3(2.0f, 5.0f, 5.0f));
+			// Update the VP matrix for render components
+			render_3d_component::vp = vp;
 
             obj->update(deltaTime);
 		}

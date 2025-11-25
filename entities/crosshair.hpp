@@ -1,15 +1,23 @@
 #ifndef _CROSSHAIR_HPP
 #define _CROSSHAIR_HPP
 
-#include "game_data.hpp"
+#include "object.hpp"
 #include "shader.hpp"
+#include "render_2d_component.hpp"
 
 class crosshair : public object {
 public:
-	crosshair() {}
+	render_2d_component* m_render;
+	bool uploaded = false;
 
-	int init() override {
-		float vertices[]{
+	crosshair(shader* linked_shader) {
+		m_render = (render_2d_component*)addComponent(new render_2d_component(linked_shader, nullptr));
+		m_render->m_mat->m_tex = nullptr; // No texture
+	}
+
+	bool init() override {
+		// Define crosshair vertices
+		float vertices[] {
 			-.025f, .002f,  0.0f,
 			.025f, .002f,  0.0f,
 			.025f,  -.002f, 0.0f,
@@ -25,44 +33,36 @@ public:
 			-.002f, -.04f, 0.0f,
 		};
 
-		glGenBuffers(1, &v_buf); // Generate the vertex buffer object
-		glBindBuffer(GL_ARRAY_BUFFER, v_buf); // Bind the vertex buffer object
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // Load the vertex buffer object
+		m_render->m_mesh->load_mesh(vertices, 12);
 
-		// Create the shader program
-		shader* shader_program = create_shader_program("shaders/crosshair_vertex_shader.glsl", nullptr, nullptr, nullptr, "shaders/crosshair_fragment_shader.glsl");
+		// Set attribute locations
+		m_render->m_mat->set_attribute("in_vertex", 0);
 
-		if (shader_program == nullptr) { // Check if the program was created successfully
-			printf(RED("Failed to create shader program\n").c_str());
+		return true;
+	}
 
-			return 1;
+	void update(float dt) override {
+		m_render->m_mat->use();
+
+		if (!uploaded) {
+			glGenBuffers(1, &m_render->m_mesh->vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, m_render->m_mesh->vbo);
+			glBufferData(GL_ARRAY_BUFFER, m_render->m_mesh->m_vertices.size() * sizeof(vertex), m_render->m_mesh->m_vertices.data(), GL_STATIC_DRAW);
+
+			for (auto& [name, loc] : m_render->m_mat->m_attributes) {
+				if (name == vertexAttr(vertex_attr::VERTEX)) {
+					glEnableVertexAttribArray(loc);
+					glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, m_pos));
+				}
+			}
+
+			uploaded = true;
 		}
 
-		program = shader_program->m_handle;
+		glBindVertexArray(m_render->m_mesh->vbo);
 
-		// Set the uniform locations
-		v_attr = glGetAttribLocation(program, "in_vertex");
-
-		return 0;
+		glDrawArrays(GL_TRIANGLES, 0, m_render->m_mesh->m_vertices.size());
 	}
-
-	void draw(glm::mat4 model, glm::mat4 view, glm::mat4 projection) override {
-		glUseProgram(program);
-
-		// Rebind the buffers
-		glBindBuffer(GL_ARRAY_BUFFER, v_buf);
-
-		// Set the vertex attribute pointers
-		glVertexAttribPointer(v_attr, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(v_attr);
-
-		// Draw the object
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-	}
-
-	void deinit() override {
-		if (v_buf != -1) { glDeleteBuffers(1, &v_buf); }
-	} // crosshair::deinit
 };
 
 #endif // _CROSSHAIR_HPP

@@ -28,4 +28,31 @@ template<> struct std::hash<vertex> {
 	}
 }; // vertex hash
 
+/**
+* @brief Vertex attribute types for shaders (must be in same order as vertex_attr_strings)
+*/
+enum class vertex_attr {
+	VERTEX,
+	COLOR,
+	NORMAL,
+	TEXCOORD
+};
+
+/**
+* @brief Get the string name of a vertex attribute (must match what is in the shader)
+*/
+static const char* vertex_attr_strings[] = {
+	"in_vertex",
+	"in_color",
+	"in_normal",
+	"in_texCoord"
+};
+
+/**
+* @brief Get the string name of a vertex attribute
+*/
+inline static const char* vertexAttr(vertex_attr attr) {
+	return vertex_attr_strings[static_cast<size_t>(attr)];
+}
+
 #endif // _VERTEX_HPP

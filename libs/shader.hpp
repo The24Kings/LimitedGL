@@ -4,33 +4,11 @@
 #include <glm/glm.hpp>
 #include <GLEW/glew.h>
 #include <stdio.h>
+#include <variant>
 
 #include "scolor.hpp"
 
 constexpr auto BUFFER_SIZE = 1024;
-
-enum class uniform_type {
-	t_int,
-	t_float,
-	t_vec3,
-	t_mat3,
-	t_mat4,
-	t_none,
-}; // uniform_type
-
-struct uniform_data {
-	GLuint m_location;
-	uniform_type m_type;
-	char m_buffer[64]; // Size of mat4f
-
-	uniform_data() : m_location(-1), m_type(uniform_type::t_none) {
-		memset(m_buffer, 0, sizeof(m_buffer));
-	};
-
-	uniform_data(uniform_type type, GLuint location) : m_location(location), m_type(type) {
-		memset(m_buffer, 0, sizeof(m_buffer));
-	}
-}; // uniform_data
 
 class shader_source {
 public:
@@ -199,11 +177,5 @@ public:
 		glUseProgram(m_handle);
 	} // use
 }; // shader
-
-/*TODO
-	Compile shaders and store them in a hash table, hash on the filename and the type of shader
-	Create a shader program and attach the shaders to it using the hash table to prevent recompilation
-	Store the shader program in a hash table with the handle and the number of sources
-*/
 
 #endif // _COMPLILE_SHADERS_HPP

@@ -153,7 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="libs\tiny_obj_loader.h" />
+    <ClCompile Include="include\tiny_obj_loader.h" />
     <ClCompile Include="src\loader.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\std_image.cpp" />
@@ -161,7 +161,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="components\component_base.hpp" />
-    <ClInclude Include="components\render_component.hpp" />
+    <ClInclude Include="components\render_2d_component.hpp" />
+    <ClInclude Include="components\render_3d_component.hpp" />
     <ClInclude Include="components\transform_component.hpp" />
     <ClInclude Include="entities\loaded_obj.hpp" />
     <ClInclude Include="entities\camera.hpp" />
@@ -170,10 +171,11 @@
     <ClInclude Include="libs\shader.hpp" />
     <ClInclude Include="libs\object.hpp" />
     <ClInclude Include="entities\player.hpp" />
-    <ClInclude Include="libs\scolor.hpp" />
-    <ClInclude Include="libs\stb_image.h" />
+    <ClInclude Include="include\scolor.hpp" />
+    <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="entities\crosshair.hpp" />
     <ClInclude Include="libs\texture.hpp" />
+    <ClInclude Include="libs\uniform.hpp" />
     <ClInclude Include="libs\vertex.hpp" />
   </ItemGroup>
   <ItemGroup>
