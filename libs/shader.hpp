@@ -16,64 +16,13 @@ constexpr auto BUFFER_SIZE = 1024;
  *
  * @return True if the shader was read successfully, false if not
 */
-static bool read_shader(char** buffer, const char* filename) { //TODO: change this to some kind of compiler to read #include statements in the shader
-	FILE* file = nullptr;
-	uint64_t file_size = 0;
-	size_t readlen = 0;
-	char* temp_buffer = nullptr;
-
-	fopen_s(&file, filename, "r");
-
-	if (!file) {
-		fprintf(stderr, RED("Failed to open file %s\n").c_str(), filename);
-		return false;
-	}
-
-	// Find the size of the file
-	fseek(file, 0, SEEK_END);
-	file_size = ftell(file);
-	rewind(file);
-
-	// Check if file size is over 1MB
-	if (file_size > (uint64_t)(1024 * 1024)) {
-		fprintf(stderr, RED("File %s is too large (Larger than 1MB)\n").c_str(), filename);
-		return false;
-	}
-
-	temp_buffer = (char*)malloc(file_size);
-
-	if (!temp_buffer) {
-		fprintf(stderr, RED("Failed to allocate memory for buffer\n").c_str());
-		return false;
-	}
-
-	// Read the file into the buffer
-	readlen = fread(temp_buffer, 1, file_size, file);
-
-	// Check if the file was read successfully
-	if (!readlen) {
-		fprintf(stderr, RED("Failed to read file %s\n").c_str(), filename);
-		return false;
-	}
-
-	temp_buffer[readlen] = '\0'; // Null terminate the buffer
-
-	printf(YELLOW("Read %zu bytes from %s\n").c_str(), readlen, filename);
-	puts(temp_buffer);
-
-	// Free up memory and set the buffer
-	*buffer = temp_buffer;
-	temp_buffer = NULL;
-
-	fclose(file);
-
-	return true;
-} // read_shader
 
 class shader_source {
-	GLenum m_handle;
+public:
+	GLuint m_handle;
 	GLuint m_type;
 	const char* m_source;
+	char* m_buffer;
 	char m_error[BUFFER_SIZE];
 
 	GLint m_isCompiled;
@@ -81,72 +30,109 @@ class shader_source {
 	// Allow shader access to private class
 	friend class shader;
 
-	shader_source() {
-		m_handle = 0;
-		m_type = 0;
-		m_source = nullptr;
-
-		m_isCompiled = 0;
-
+	/**
+	* @brief Construct and compile the provided shader
+	*/
+	shader_source(GLuint shader_handle, GLuint type, const char* source) : m_handle(-1), m_type(type), m_source(source), m_isCompiled(GL_FALSE) {
+		m_buffer = nullptr;
 		memset(m_error, 0, BUFFER_SIZE);
+
+		this->compile(shader_handle);
 	}
 
-	shader_source(GLuint type, const char* source) : m_type(type), m_source(source), m_isCompiled(-1) {
-		m_handle = 0;
-		memset(m_error, 0, BUFFER_SIZE);
+	~shader_source() {
+		if (this->m_isCompiled) { glDeleteShader(this->m_handle); }
 	}
+
+private:
+	/**
+	* @brief Load shader source from filepath
+	* 
+	* @returns bool Returns true if loading was successful, false on failure
+	*/
+	bool load() { //TODO: change this to some kind of compiler to read #include statements in the shader
+		FILE* file = nullptr;
+		uint64_t file_size = 0;
+		size_t readlen = 0;
+
+		fopen_s(&file, this->m_source, "r");
+
+		if (!file) {
+			fprintf(stderr, RED("Failed to open file %s\n").c_str(), this->m_source);
+			return false;
+		}
+
+		// Find the size of the file
+		fseek(file, 0, SEEK_END);
+		file_size = ftell(file);
+		rewind(file);
+
+		// Check if file size is over 1MB
+		if (file_size > (uint64_t)(1024 * 1024)) {
+			fprintf(stderr, RED("File %s is too large (Larger than 1MB)\n").c_str(), this->m_source);
+			return false;
+		}
+
+		this->m_buffer = (char*)malloc(file_size);
+
+		if (!this->m_buffer) {
+			fprintf(stderr, RED("Failed to allocate memory for buffer\n").c_str());
+			return false;
+		}
+
+		// Read the file into the buffer
+		readlen = fread(this->m_buffer, 1, file_size, file);
+
+		// Check if the file was read successfully
+		if (!readlen) {
+			fprintf(stderr, RED("Failed to read file %s\n").c_str(), this->m_source);
+			return false;
+		}
+
+		this->m_buffer[readlen] = '\0'; // Null terminate the buffer
+
+		printf(YELLOW("Read %zu bytes from %s\n").c_str(), readlen, this->m_source);
+		puts(this->m_buffer);
+
+		fclose(file);
+
+		return true;
+	} // load
 
 	/**
 	* @brief Create a shader source
-	 *
-	 * @param type The type of shader
-	 * @param source The shader source
-	 *
-	 * @return The shader source
+	*
+	* @return The shader source, nullptr on fail
 	*/
-	shader_source* compile() {
-		uint64_t file_size = 0;
-		char* buffer = nullptr;
-
+	void compile(GLuint shader_handle) {
 		if (!this->m_source)
-			return nullptr;
+			return;
 
-		if (!read_shader(&buffer, this->m_source)) { // Read the shader source from the file
+		if (!load()) {
 			printf(RED("Failed to read shader source from %s\n").c_str(), this->m_source);
-			return nullptr;
+			return;
 		}
 
 		// Create the shader
-		unsigned int handle = glCreateShader(this->m_type);
-		glShaderSource(handle, 1, &buffer, NULL);
-		glCompileShader(handle);
-		glGetShaderInfoLog(handle, BUFFER_SIZE, NULL, this->m_error);
+		this->m_handle = glCreateShader(this->m_type);
 
-		free(buffer);
+		glShaderSource(this->m_handle, 1, &this->m_buffer, NULL);
+		glCompileShader(this->m_handle);
+		glGetShaderInfoLog(this->m_handle, BUFFER_SIZE, NULL, this->m_error);
 
 		// Check if the shader compiled successfully
-		GLint isCompiled = 0;
-		glGetShaderiv(handle, GL_COMPILE_STATUS, &isCompiled);
+		glGetShaderiv(this->m_handle, GL_COMPILE_STATUS, &this->m_isCompiled);
 
-		if (!isCompiled) {
-			// Clear up GPU memory
+		if (!this->m_isCompiled) {
 			printf(RED("Compile Failed: %s\n").c_str(), this->m_error);
-
-			glDeleteShader(handle);
-
-			return nullptr;
+			return;
 		}
 
 		puts(GREEN("Compile Success\n").c_str());
 
-		// Set the shader properties
-		this->m_handle = handle;
-		this->m_type = m_type;
-		this->m_source = m_source;
-
-		return this;
+		glAttachShader(shader_handle, this->m_handle);
 	}
-}; // shader_source
+}; // compile
 
 class shader {
 public:
@@ -155,50 +141,29 @@ public:
 
 	std::vector<shader_source> m_shaders;
 
-	shader(const char* v_file, const char* tcs_file, const char* tes_file, const char* g_file, const char* f_file) : m_handle(-1), m_shaders({}) {
-		this->compile(v_file, tcs_file, tes_file, g_file, f_file);
+	/**
+	* @brief Buider style shader compiler
+	*/
+	shader() : m_handle(glCreateProgram()), m_isLinked(GL_FALSE) {
+		if (!this->m_handle) { printf(RED("Failed to create shader handle").c_str()); }
 	}
 
-	void use() const {
-		glUseProgram(m_handle);
-	}
+	/**
+	* @brief Attach a shader source to the shader program
+	*/
+	void add(GLuint type, const char* filepath) {
+		auto _ = shader_source(this->m_handle, type, filepath);
+	} // add
 
-private:
-	void compile(const char* v_file, const char* tcs_file, const char* tes_file, const char* g_file, const char* f_file) {
-		// Compile the shaders
-		if (!v_file || !f_file) {
-			fprintf(stderr, RED("Vertex and Fragment shaders are required\n").c_str());
-			return;
-		}
-
-		this->m_handle = glCreateProgram();
-
-		// Compile shaders
-		shader_source* vertex_shader = shader_source(GL_VERTEX_SHADER, v_file).compile();
-		shader_source* tess_control_shader = shader_source(GL_TESS_CONTROL_SHADER, tcs_file).compile();
-		shader_source* tess_eval_shader = shader_source(GL_TESS_EVALUATION_SHADER, tes_file).compile();
-		shader_source* geometry_shader = shader_source(GL_GEOMETRY_SHADER, g_file).compile();
-		shader_source* fragment_shader = shader_source(GL_FRAGMENT_SHADER, f_file).compile();
-
-		// Attach the shaders to the program
-		if (vertex_shader) { glAttachShader(this->m_handle, vertex_shader->m_handle); }
-		if (tess_control_shader) { glAttachShader(this->m_handle, tess_control_shader->m_handle); }
-		if (tess_eval_shader) { glAttachShader(this->m_handle, tess_eval_shader->m_handle); }
-		if (geometry_shader) { glAttachShader(this->m_handle, geometry_shader->m_handle); }
-		if (fragment_shader) { glAttachShader(this->m_handle, fragment_shader->m_handle); }
-
+	/**
+	* @brief Link the shader to the GPU
+	*/
+	void link() {
 		// Link the program
 		glLinkProgram(this->m_handle);
 
 		// Validate the program
 		glGetProgramiv(this->m_handle, GL_LINK_STATUS, &this->m_isLinked);
-
-		// Delete the shaders as they are no longer needed after linking
-		if (vertex_shader) { glDeleteShader(vertex_shader->m_handle); }
-		if (tess_control_shader) { glDeleteShader(tess_control_shader->m_handle); }
-		if (tess_eval_shader) { glDeleteShader(tess_eval_shader->m_handle); }
-		if (geometry_shader) { glDeleteShader(geometry_shader->m_handle); }
-		if (fragment_shader) { glDeleteShader(fragment_shader->m_handle); }
 
 		if (!this->m_isLinked) {
 			puts(RED("Link Failed").c_str());
@@ -210,7 +175,14 @@ private:
 		}
 
 		puts(GREEN("Link Success").c_str());
-	}
+	} // link
+
+	/**
+	* @brief
+	*/
+	void use() const {
+		glUseProgram(m_handle);
+	} // use
 }; // shader
 
 /*TODO

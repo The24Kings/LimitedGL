@@ -76,11 +76,11 @@ struct material {
 
 	std::unordered_map<std::string, uniform_data> uniforms;
 
-	material(shader* shader) : m_shader(shader), m_tex(nullptr) {
-		v_attr = glGetAttribLocation(shader->m_handle, "in_vertex");
-		c_attr = glGetAttribLocation(shader->m_handle, "in_color");
-		t_attr = glGetAttribLocation(shader->m_handle, "in_texCoord");
-		n_attr = glGetAttribLocation(shader->m_handle, "in_normal");
+	material(shader* linked_shader) : m_shader(linked_shader), m_tex(nullptr) {
+		v_attr = glGetAttribLocation(linked_shader->m_handle, "in_vertex");
+		c_attr = glGetAttribLocation(linked_shader->m_handle, "in_color");
+		t_attr = glGetAttribLocation(linked_shader->m_handle, "in_texCoord");
+		n_attr = glGetAttribLocation(linked_shader->m_handle, "in_normal");
 	}
 
 	~material() {
@@ -265,8 +265,8 @@ public:
 	material* m_mat;
 	mesh* m_mesh;
 
-	render_component(shader* shader) {
-		this->m_mat = new material(shader);
+	render_component(shader* linked_shader) {
+		this->m_mat = new material(linked_shader);
 		this->m_mesh = new mesh();
 	}
 

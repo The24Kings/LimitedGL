@@ -23,10 +23,10 @@ public:
 	*
 	* @param of The object file
 	* @param tf The texture file
-	* @param shader Object shader
+	* @param linked_shader Object shader
 	*/
-	loaded_obj(std::string of, std::string tf, shader* shader) : object_file(of), texture_file(tf), objBaseDir(object_file.substr(0, object_file.find('/'))) {
-		m_render = (render_component*)addComponent(new render_component(shader));
+	loaded_obj(std::string of, std::string tf, shader* linked_shader) : object_file(of), texture_file(tf), objBaseDir(object_file.substr(0, object_file.find('/'))) {
+		m_render = (render_component*)addComponent(new render_component(linked_shader));
 
 		m_render->m_mat->m_tex = new texture();
 	}

@@ -89,8 +89,14 @@ int main(void) {
 	glDebugMessageCallback(MessageCallback, 0);
 
     /* Objects */
-    shader* loaded_obj_shader = new shader("shaders/loaded_obj_vertex_shader.glsl", nullptr, nullptr, nullptr, "shaders/loaded_obj_fragment_shader.glsl");
-	loaded_obj obj = loaded_obj("objects/cube.obj", "objects/textures/brick.jpg", loaded_obj_shader);
+    shader* loaded_obj_shader = new shader();
+
+    loaded_obj_shader->add(GL_VERTEX_SHADER, "shaders/loaded_obj_vertex_shader.glsl");
+    loaded_obj_shader->add(GL_FRAGMENT_SHADER, "shaders/loaded_obj_fragment_shader.glsl");
+
+    loaded_obj_shader->link();
+	
+    loaded_obj obj = loaded_obj("objects/cube.obj", "objects/textures/brick.jpg", loaded_obj_shader);
     objects.push_back(&obj);
 
     /*crosshair cross = crosshair();
