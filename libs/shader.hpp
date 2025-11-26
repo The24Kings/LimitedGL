@@ -46,41 +46,31 @@ private:
 	* @returns bool Returns true if loading was successful, false on failure
 	*/
 	bool load() { //TODO: change this to some kind of compiler to read #include statements in the shader
-		std::ifstream inputFileStream(this->m_source, std::ios::ate | std::ios::binary);
-		std::stringstream bufferStream;
-
-		if (!inputFileStream.is_open()) {
+		std::ifstream input_file(this->m_source, std::ios::binary);
+		if (!input_file.is_open()) {
 			fprintf(stderr, RED("Failed to open file %s\n").c_str(), this->m_source);
-			return false; 
-		}
-
-		std::streamsize filesize = inputFileStream.tellg();
-		if (filesize <= 0) {
-			fprintf(stderr, RED("File %s is empty or unreadable\n").c_str(), this->m_source);
 			return false;
 		}
 
-		if (filesize > (1024 * 1024)) {
-			fprintf(stderr, RED("File %s is too large (Larger than 1MB)\n").c_str(), this->m_source);
+		// Read file into std::string
+		std::string s_data((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
+		input_file.close();
+
+		if (s_data.empty()) {
+			fprintf(stderr, RED("File %s is empty or unreadable: %lld bytes\n").c_str(), this->m_source, s_data.size());
 			return false;
 		}
 
-		// Create buffer
-		char* buffer = new char[filesize + 1];
-		inputFileStream.seekg(0);
-		inputFileStream.read(buffer, filesize);
+		if (s_data.size() > (1024 * 1024)) {
+			fprintf(stderr, RED("File %s is too large (Larger than 1MB): %lld bytes\n").c_str(), this->m_source, s_data.size());
+			return false;
+		}
 
-		std::streamsize bytesRead = inputFileStream.gcount();
-		buffer[bytesRead] = '\0';
+		printf(YELLOW("Read %zu bytes from %s\n").c_str(), s_data.size(), this->m_source);
 
-		inputFileStream.close();
-
-		printf(YELLOW("Read %lld bytes from %s\n").c_str(), static_cast<long long>(bytesRead), this->m_source);
-		puts(buffer);
-
+		// Pass to OpenGL
+		const char* buffer = s_data.c_str();
 		glShaderSource(this->m_handle, 1, &buffer, NULL);
-
-		free(buffer);
 
 		return true;
 	} // load
