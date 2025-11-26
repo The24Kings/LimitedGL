@@ -3,8 +3,12 @@
 
 #include <glm/glm.hpp>
 #include <GLEW/glew.h>
-#include <stdio.h>
 #include <variant>
+#include <fstream>
+#include <istream>
+#include <sstream>
+#include <string>
+#include <iostream>
 
 #include "scolor.hpp"
 
@@ -15,7 +19,6 @@ public:
 	GLuint m_handle;
 	GLuint m_type;
 	const char* m_source;
-	char* m_buffer;
 	char m_error[BUFFER_SIZE];
 
 	GLint m_isCompiled;
@@ -27,14 +30,13 @@ public:
 	* @brief Construct and compile the provided shader
 	*/
 	shader_source(GLuint shader_handle, GLuint type, const char* source) : m_handle(-1), m_type(type), m_source(source), m_isCompiled(GL_FALSE) {
-		m_buffer = nullptr;
 		memset(m_error, 0, BUFFER_SIZE);
 
 		this->compile(shader_handle);
 	}
 
 	~shader_source() {
-		if (this->m_isCompiled) { glDeleteShader(this->m_handle); }
+		if (this->m_handle != -1) { glDeleteShader(this->m_handle); }
 	}
 
 private:
@@ -44,50 +46,41 @@ private:
 	* @returns bool Returns true if loading was successful, false on failure
 	*/
 	bool load() { //TODO: change this to some kind of compiler to read #include statements in the shader
-		FILE* file = nullptr;
-		uint64_t file_size = 0;
-		size_t readlen = 0;
+		std::ifstream inputFileStream(this->m_source, std::ios::ate | std::ios::binary);
+		std::stringstream bufferStream;
 
-		fopen_s(&file, this->m_source, "r");
-
-		if (!file) {
+		if (!inputFileStream.is_open()) {
 			fprintf(stderr, RED("Failed to open file %s\n").c_str(), this->m_source);
+			return false; 
+		}
+
+		std::streamsize filesize = inputFileStream.tellg();
+		if (filesize <= 0) {
+			fprintf(stderr, RED("File %s is empty or unreadable\n").c_str(), this->m_source);
 			return false;
 		}
 
-		// Find the size of the file
-		fseek(file, 0, SEEK_END);
-		file_size = ftell(file);
-		rewind(file);
-
-		// Check if file size is over 1MB
-		if (file_size > (uint64_t)(1024 * 1024)) {
+		if (filesize > (1024 * 1024)) {
 			fprintf(stderr, RED("File %s is too large (Larger than 1MB)\n").c_str(), this->m_source);
 			return false;
 		}
 
-		this->m_buffer = (char*)malloc(file_size);
+		// Create buffer
+		char* buffer = new char[filesize + 1];
+		inputFileStream.seekg(0);
+		inputFileStream.read(buffer, filesize);
 
-		if (!this->m_buffer) {
-			fprintf(stderr, RED("Failed to allocate memory for buffer\n").c_str());
-			return false;
-		}
+		std::streamsize bytesRead = inputFileStream.gcount();
+		buffer[bytesRead] = '\0';
 
-		// Read the file into the buffer
-		readlen = fread(this->m_buffer, 1, file_size, file);
+		inputFileStream.close();
 
-		// Check if the file was read successfully
-		if (!readlen) {
-			fprintf(stderr, RED("Failed to read file %s\n").c_str(), this->m_source);
-			return false;
-		}
+		printf(YELLOW("Read %lld bytes from %s\n").c_str(), static_cast<long long>(bytesRead), this->m_source);
+		puts(buffer);
 
-		this->m_buffer[readlen] = '\0'; // Null terminate the buffer
+		glShaderSource(this->m_handle, 1, &buffer, NULL);
 
-		printf(YELLOW("Read %zu bytes from %s\n").c_str(), readlen, this->m_source);
-		puts(this->m_buffer);
-
-		fclose(file);
+		free(buffer);
 
 		return true;
 	} // load
@@ -101,27 +94,24 @@ private:
 		if (!this->m_source)
 			return;
 
+		this->m_handle = glCreateShader(this->m_type);
+
 		if (!load()) {
-			printf(RED("Failed to read shader source from %s\n").c_str(), this->m_source);
+			fprintf(stderr, RED("Failed to read shader source from %s\n").c_str(), this->m_source);
 			return;
 		}
 
-		// Create the shader
-		this->m_handle = glCreateShader(this->m_type);
-
-		glShaderSource(this->m_handle, 1, &this->m_buffer, NULL);
+		// Compile
 		glCompileShader(this->m_handle);
 		glGetShaderInfoLog(this->m_handle, BUFFER_SIZE, NULL, this->m_error);
-
-		// Check if the shader compiled successfully
 		glGetShaderiv(this->m_handle, GL_COMPILE_STATUS, &this->m_isCompiled);
 
 		if (!this->m_isCompiled) {
-			printf(RED("Compile Failed: %s\n").c_str(), this->m_error);
+			fprintf(stderr, RED("Compile Failed: %s\n").c_str(), this->m_error);
 			return;
 		}
 
-		puts(GREEN("Compile Success\n").c_str());
+		fprintf(stdout, GREEN("Compile Success\n").c_str());
 
 		glAttachShader(shader_handle, this->m_handle);
 	}
