@@ -22,6 +22,9 @@ public:
 	char m_error[BUFFER_SIZE];
 
 	GLint m_isCompiled;
+	
+	//TODO: Add the shader vertex attributes here rather than in the material
+	//TODO: change this to some kind of compiler to read #include statements in the shader (i.e. https://github.com/HorseTrain/antworld/blob/main/antworld/assets/shaders/stl/shared_shader_data.h)
 
 	// Allow shader access to private class
 	friend class shader;
@@ -45,7 +48,7 @@ private:
 	* 
 	* @returns bool Returns true if loading was successful, false on failure
 	*/
-	bool load() { //TODO: change this to some kind of compiler to read #include statements in the shader
+	bool load() { 
 		std::ifstream input_file(this->m_source, std::ios::binary);
 		if (!input_file.is_open()) {
 			fprintf(stderr, RED("Failed to open file %s\n").c_str(), this->m_source);
@@ -118,7 +121,11 @@ public:
 	* @brief Buider style shader compiler
 	*/
 	shader() : m_handle(glCreateProgram()), m_isLinked(GL_FALSE) {
-		if (!this->m_handle) { printf(RED("Failed to create shader handle").c_str()); }
+		if (!this->m_handle) { throw std::runtime_error("Failed to create shader handle"); }
+	}
+
+	~shader() {
+		glDeleteProgram(this->m_handle);
 	}
 
 	/**
@@ -134,16 +141,10 @@ public:
 	void link() {
 		// Link the program
 		glLinkProgram(this->m_handle);
-
-		// Validate the program
 		glGetProgramiv(this->m_handle, GL_LINK_STATUS, &this->m_isLinked);
 
 		if (!this->m_isLinked) {
 			puts(RED("Link Failed").c_str());
-
-			glDeleteProgram(this->m_handle);
-			this->m_handle = -1;
-
 			return;
 		}
 
