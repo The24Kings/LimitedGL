@@ -1,4 +1,4 @@
-#version 460
+#version 460 core
 
 in vec3 in_vertex;
 out vec4 gl_Position;

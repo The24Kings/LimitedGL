@@ -29,7 +29,7 @@ int SCRN_HEIGHT = 1080;
 std::vector<object*> objects;
 
 frustum main_frustum = frustum(65.0f, 0.1f, 100.0f);
-camera main_camera = camera(glm::vec3(0.0f, 0.0f, 5.0f));
+camera main_camera = camera();
 player main_player = player();
 
 /* Frame Data */
@@ -85,6 +85,8 @@ int main(void) {
 	glDebugMessageCallback(MessageCallback, 0);
 
     /* Objects */
+    main_camera.m_transform->position = glm::vec3(0.0f, 0.0f, 30.0f);
+
     shader* loaded_obj_shader = new shader();
     loaded_obj_shader->add(GL_VERTEX_SHADER, "shaders/loaded_obj_vertex_shader.glsl");
     loaded_obj_shader->add(GL_FRAGMENT_SHADER, "shaders/loaded_obj_fragment_shader.glsl");
@@ -94,7 +96,7 @@ int main(void) {
     crosshair_shader->add(GL_VERTEX_SHADER, "shaders/crosshair_vertex_shader.glsl");
     crosshair_shader->add(GL_FRAGMENT_SHADER, "shaders/crosshair_fragment_shader.glsl");
     crosshair_shader->link();
-	
+
     loaded_obj obj = loaded_obj("objects/earth.obj", "objects/textures/earth albedo.jpg", loaded_obj_shader);
     objects.push_back(&obj);
 
@@ -133,16 +135,17 @@ int main(void) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Player Movement
-        if (main_player.keys.w) { main_camera.cameraMoveForward(deltaTime); }
-        if (main_player.keys.s) { main_camera.cameraMoveBackward(deltaTime); }
-        if (main_player.keys.a) { main_camera.cameraMoveLeft(deltaTime); }
-        if (main_player.keys.d) { main_camera.cameraMoveRight(deltaTime); }
-        if (main_player.keys.space) { main_camera.cameraMoveUp(deltaTime); }
-        if (main_player.keys.shift) { main_camera.cameraMoveDown(deltaTime); }
+        float movementSpeed = 0.2f;
+        if (main_player.keys.w) { main_camera.m_transform->moveForward(movementSpeed, deltaTime); }
+        if (main_player.keys.s) { main_camera.m_transform->moveBackward(movementSpeed, deltaTime); }
+        if (main_player.keys.a) { main_camera.m_transform->moveLeft(movementSpeed, deltaTime); }
+        if (main_player.keys.d) { main_camera.m_transform->moveRight(movementSpeed, deltaTime); }
+        if (main_player.keys.space) { main_camera.m_transform->moveUp(movementSpeed, deltaTime); }
+        if (main_player.keys.shift) { main_camera.m_transform->moveDown(movementSpeed, deltaTime); }
 
         /* Get the view and projection matrices */
 		model = glm::mat4(1.0f);
-		view = main_camera.getCameraViewMatrix();
+		view = main_camera.getViewMatrix();
         projection = glm::perspective(glm::radians(main_frustum.fovDegrees), (float)SCRN_WIDTH / (float)SCRN_HEIGHT, main_frustum.near_plane, main_frustum.far_plane);
         vp = projection * view;
 
@@ -230,5 +233,5 @@ static void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 
     glfwSetCursorPos(window, center_x, center_y);
 
-	main_camera.cameraMouseMovement((float)xpos, (float)ypos, center_x, center_y, deltaTime);
+	main_camera.pointCamera((float)xpos, (float)ypos, center_x, center_y, deltaTime);
 } // mouse_callback

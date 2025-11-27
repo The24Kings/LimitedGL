@@ -24,7 +24,7 @@ struct object {
 	virtual bool init() { return 0; }
 	virtual void deinit() {}
 	
-	void update(float dt) {
+	virtual void update(float dt) {
 		for (auto c : m_components) {
 			c->update(dt);
 		}

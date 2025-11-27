@@ -154,10 +154,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="include\tiny_obj_loader.h" />
-    <ClCompile Include="src\loader.cpp" />
+    <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\object.cpp" />
     <ClCompile Include="src\std_image.cpp" />
+    <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\tiny_object_loader.cc" />
+    <ClCompile Include="src\transform_component.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="components\component_base.hpp" />
