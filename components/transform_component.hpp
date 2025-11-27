@@ -11,9 +11,9 @@ struct transform_component : public component { // 128 bytes
 	glm::quat rotation;
 	glm::vec3 scale;
 
-	glm::vec3 localFront = glm::identity<glm::vec3>();
-	glm::vec3 localRight = glm::identity<glm::vec3>();
-	glm::vec3 localUp = glm::identity<glm::vec3>();
+	glm::vec3 localFront = glm::vec3(0.0f);
+	glm::vec3 localRight = glm::vec3(0.0f);
+	glm::vec3 localUp = glm::vec3(0.0f);
 
 	float m_degrees = 0.0f;
 
@@ -26,7 +26,9 @@ struct transform_component : public component { // 128 bytes
 	/**
 	* @brief Get the position matrix (local)
 	*/
-	inline glm::mat4 getPositionMatrix() const;
+	inline glm::mat4 getPositionMatrix() const {
+		return glm::translate(glm::mat4(1.0f), -position); // Note the negative sign for moving the world opposite to the camera position
+	}
 
 	void moveForward(float speed, float deltaTime) {
 		position += localFront * speed * deltaTime;

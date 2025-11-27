@@ -21,7 +21,7 @@ struct object {
 
 	object(object&) = delete; // No copy constructor
 
-	virtual bool init() { return 0; }
+	virtual bool init() { return true; }
 	virtual void deinit() {}
 	
 	virtual void update(float dt) {

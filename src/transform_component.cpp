@@ -11,7 +11,3 @@ void transform_component::update(float dt) {
 		obj->m_render->m_mat->set_uniform("model", model);
 	}
 }
-
-inline glm::mat4 transform_component::getPositionMatrix() const {
-	return glm::translate(glm::mat4(1.0f), -position); // Note the negative sign for moving the world opposite to the camera position
-}

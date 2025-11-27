@@ -1,6 +1,6 @@
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <GLEW/glew.h>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glfw/glfw3.h>
 #include <cstdio>
 #include <vector>
@@ -86,6 +86,7 @@ int main(void) {
 
     /* Objects */
     main_camera.m_transform->position = glm::vec3(0.0f, 0.0f, 30.0f);
+    objects.push_back(&main_camera);
 
     shader* loaded_obj_shader = new shader();
     loaded_obj_shader->add(GL_VERTEX_SHADER, "shaders/loaded_obj_vertex_shader.glsl");
@@ -135,13 +136,12 @@ int main(void) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Player Movement
-        float movementSpeed = 0.2f;
-        if (main_player.keys.w) { main_camera.m_transform->moveForward(movementSpeed, deltaTime); }
-        if (main_player.keys.s) { main_camera.m_transform->moveBackward(movementSpeed, deltaTime); }
-        if (main_player.keys.a) { main_camera.m_transform->moveLeft(movementSpeed, deltaTime); }
-        if (main_player.keys.d) { main_camera.m_transform->moveRight(movementSpeed, deltaTime); }
-        if (main_player.keys.space) { main_camera.m_transform->moveUp(movementSpeed, deltaTime); }
-        if (main_player.keys.shift) { main_camera.m_transform->moveDown(movementSpeed, deltaTime); }
+        if (main_player.keys.w) { main_camera.m_transform->moveForward(main_player.movementSpeed, deltaTime); }
+        if (main_player.keys.s) { main_camera.m_transform->moveBackward(main_player.movementSpeed, deltaTime); }
+        if (main_player.keys.a) { main_camera.m_transform->moveLeft(main_player.movementSpeed, deltaTime); }
+        if (main_player.keys.d) { main_camera.m_transform->moveRight(main_player.movementSpeed, deltaTime); }
+        if (main_player.keys.space) { main_camera.m_transform->moveUp(main_player.movementSpeed, deltaTime); }
+        if (main_player.keys.shift) { main_camera.m_transform->moveDown(main_player.movementSpeed, deltaTime); }
 
         /* Get the view and projection matrices */
 		model = glm::mat4(1.0f);
