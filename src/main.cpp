@@ -117,7 +117,6 @@ int main(void) {
     glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DEBUG_OUTPUT);
 
-    glm::mat4 model = glm::identity<glm::mat4>();
     glm::mat4 view = glm::identity<glm::mat4>();
     glm::mat4 projection = glm::identity<glm::mat4>();
     glm::mat4 vp = glm::identity<glm::mat4>();
@@ -144,7 +143,6 @@ int main(void) {
         if (main_player.keys.shift) { main_camera.m_transform->moveDown(main_player.movementSpeed, deltaTime); }
 
         /* Get the view and projection matrices */
-		model = glm::mat4(1.0f);
 		view = main_camera.getViewMatrix();
         projection = glm::perspective(glm::radians(main_frustum.fovDegrees), (float)SCRN_WIDTH / (float)SCRN_HEIGHT, main_frustum.near_plane, main_frustum.far_plane);
         vp = projection * view;

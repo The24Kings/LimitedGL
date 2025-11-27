@@ -144,11 +144,11 @@ public:
 		glGetProgramiv(this->m_handle, GL_LINK_STATUS, &this->m_isLinked);
 
 		if (!this->m_isLinked) {
-			fprintf(stderr, RED("Link Failed").c_str());
+			fprintf(stderr, RED("Link Failed\n").c_str());
 			return;
 		}
 
-		printf(GREEN("Link Success").c_str());
+		printf(GREEN("Link Success\n").c_str());
 	} // link
 
 	/**

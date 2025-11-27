@@ -45,6 +45,10 @@ public:
 		m_render->m_mat->use();
 
 		if (!uploaded) {
+			// Generate the vertex array object
+			glGenVertexArrays(1, &m_render->m_mesh->vao);
+			glBindVertexArray(m_render->m_mesh->vao);
+
 			glGenBuffers(1, &m_render->m_mesh->vbo);
 			glBindBuffer(GL_ARRAY_BUFFER, m_render->m_mesh->vbo);
 			glBufferData(GL_ARRAY_BUFFER, m_render->m_mesh->m_vertices.size() * sizeof(vertex), m_render->m_mesh->m_vertices.data(), GL_STATIC_DRAW);

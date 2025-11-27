@@ -10,7 +10,6 @@ struct frustum {
 	float near_plane, far_plane;
 	float fovDegrees;
 
-
 	frustum(float fov, float np, float fp) : fovDegrees(fov), near_plane(np), far_plane(fp) {}
 
 	void cameraZoom(float yoffset) {
@@ -27,7 +26,6 @@ struct camera : public object {
 	float pitch;
 	float yaw;
 
-	float movementSpeed = 2.5f;
 	float mouseSensitivity = 0.05f;
 
 	transform_component* m_transform;

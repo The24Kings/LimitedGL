@@ -24,15 +24,6 @@ public:
 		delete m_mat;
 		delete m_mesh;
 	}
-
-	void update(float dt) override {
-		render();
-	}
-
-	void render() {
-		m_mat->use();
-		m_mesh->draw(m_mat);
-	}
 }; // render_component
 
 #endif // _RENDER_2D_COMPONENT_HPP
