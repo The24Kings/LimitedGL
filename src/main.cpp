@@ -1,25 +1,21 @@
-#define GLM_ENABLE_EXPERIMENTAL
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/quaternion.hpp>
 #include <GLEW/glew.h>
 #include <glfw/glfw3.h>
-
-#include <inttypes.h>
-#include <stdio.h>
+#include <cstdio>
 #include <vector>
-#include <thread>
-#include <chrono>
+#include <string>
 #define _USE_MATH_DEFINES
 #include<math.h>
+
+#include "scolor.hpp"
 
 #include "camera.hpp"
 #include "player.hpp"
 #include "shader.hpp"
 #include "object.hpp"
 
+#include "render_3d_component.hpp"
 #include "loaded_obj.hpp"
 //#include "crosshair.hpp"
 
@@ -32,7 +28,7 @@ int SCRN_HEIGHT = 1080;
 
 std::vector<object*> objects;
 
-frustum main_frustum = frustum(45.0f, 0.1f, 100.0f);
+frustum main_frustum = frustum(65.0f, 0.1f, 100.0f);
 camera main_camera = camera(glm::vec3(0.0f, 0.0f, 5.0f));
 player main_player = player();
 
@@ -99,7 +95,7 @@ int main(void) {
     crosshair_shader->add(GL_FRAGMENT_SHADER, "shaders/crosshair_fragment_shader.glsl");
     crosshair_shader->link();
 	
-    loaded_obj obj = loaded_obj("objects/cube.obj", "objects/textures/brick.jpg", loaded_obj_shader);
+    loaded_obj obj = loaded_obj("objects/earth.obj", "objects/textures/earth albedo.jpg", loaded_obj_shader);
     objects.push_back(&obj);
 
     //crosshair cross = crosshair(crosshair_shader);

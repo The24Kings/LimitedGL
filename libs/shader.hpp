@@ -1,14 +1,13 @@
 #ifndef _COMPLILE_SHADERS_HPP
 #define _COMPLILE_SHADERS_HPP
 
-#include <glm/glm.hpp>
 #include <GLEW/glew.h>
-#include <variant>
+#include <stdexcept>
+#include <iterator>
 #include <fstream>
-#include <istream>
-#include <sstream>
+#include <vector>
 #include <string>
-#include <iostream>
+#include <cstdio>
 
 #include "scolor.hpp"
 
@@ -121,6 +120,7 @@ public:
 	* @brief Buider style shader compiler
 	*/
 	shader() : m_handle(glCreateProgram()), m_isLinked(GL_FALSE) {
+		printf(BLUE("Constructing shader\n").c_str());
 		if (!this->m_handle) { throw std::runtime_error("Failed to create shader handle"); }
 	}
 
@@ -144,11 +144,11 @@ public:
 		glGetProgramiv(this->m_handle, GL_LINK_STATUS, &this->m_isLinked);
 
 		if (!this->m_isLinked) {
-			puts(RED("Link Failed").c_str());
+			fprintf(stderr, RED("Link Failed").c_str());
 			return;
 		}
 
-		puts(GREEN("Link Success").c_str());
+		printf(GREEN("Link Success").c_str());
 	} // link
 
 	/**

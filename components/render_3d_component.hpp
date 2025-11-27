@@ -1,7 +1,6 @@
 #ifndef _RENDER_3D_COMPONENT_HPP
 #define _RENDER_3D_COMPONENT_HPP
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -9,13 +8,13 @@
 #include "shader.hpp"
 #include "material.hpp"
 #include "mesh.hpp"
+#include "texture.hpp"
 
 class render_3d_component : public component {
 public:
 	material* m_mat;
 	mesh* m_mesh;
 
-	glm::mat4 model = glm::identity<glm::mat4>();
 	inline static glm::mat4 vp;
 
 	render_3d_component(shader* linked_shader, texture* linked_texture) {
@@ -29,11 +28,10 @@ public:
 	}
 
 	void update(float dt) override {
-		m_mat->set_uniform("model", model);
 		m_mat->set_uniform("vp", vp);
 
 		m_mat->set_uniform("ambient_strength", 0.2f);
-		m_mat->set_uniform("light_pos", glm::vec3(2.0f, 5.0f, 5.0f));
+		m_mat->set_uniform("light_pos", glm::vec3(2.0f, 25.0f, 25.0f));
 
 		render();
 	}

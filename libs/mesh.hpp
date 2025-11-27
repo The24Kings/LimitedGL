@@ -3,6 +3,8 @@
 
 #include <glm/glm.hpp>
 #include <GLEW/glew.h>
+#include <cstdint>
+#include <vector>
 
 #include "material.hpp"
 #include "vertex.hpp"

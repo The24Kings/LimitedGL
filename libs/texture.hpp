@@ -13,6 +13,12 @@ struct texture {
 	texture() : m_filename(nullptr), m_image_data(nullptr), m_handle(-1), m_width(0), m_height(0) {}
 }; // texture
 
+/**
+ * Load a texture into the GPU
+ *
+ * @param filename The name of the texture file
+ * @param tex The texture object
+ */
 bool load_texture(const char* filename, texture* tex);
 
 #endif // _TEXTURE_HPP

@@ -2,7 +2,9 @@
 #define _CAMERA_HPP
 
 #include <glm/glm.hpp>
-#include <glm/gtx/quaternion.hpp>
+
+#include "object.hpp"
+#include "transform_component.hpp"
 
 struct frustum {
 	float near_plane, far_plane;
@@ -16,8 +18,8 @@ struct frustum {
 
 		if (fovDegrees < 1.0f)
 			fovDegrees = 1.0f;
-		if (fovDegrees > 45.0f)
-			fovDegrees = 45.0f;
+		if (fovDegrees > 65.0f)
+			fovDegrees = 65.0f;
 	}
 }; // frustum
 

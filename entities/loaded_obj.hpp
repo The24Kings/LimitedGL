@@ -1,12 +1,18 @@
 #ifndef _BASE_OBJECTS_HPP
 #define _BASE_OBJECTS_HPP
 
-#include <glm/glm.hpp>
+#include <GLEW/glew.h>
+#include <string>
 #include <stdexcept>
+#include <cstdio>
 
+#include "scolor.hpp"
 #include "object.hpp"
+#include "vertex.hpp"
 #include "shader.hpp"
+#include "texture.hpp"
 #include "render_3d_component.hpp"
+#include "transform_component.hpp"
 
 /**
 * @brief A loaded object from an OBJ file with a texture
@@ -18,6 +24,7 @@ public:
 	std::string objBaseDir;
 
 	render_3d_component* m_render;
+	transform_component* m_transform;
 
 	/**
 	* Create a new loaded_obj object
@@ -30,6 +37,15 @@ public:
 		if (!linked_shader->m_isLinked) { throw std::invalid_argument("You must link the shader before using it"); }
 
 		m_render = (render_3d_component*)addComponent(new render_3d_component(linked_shader, new texture()));
+		m_transform = (transform_component*)addComponent(new transform_component());
+	}
+
+	void update(float dt) override {
+		for (auto c : m_components) {
+			c->update(dt);
+		}
+
+		m_transform->rotation = glm::angleAxis(glm::radians(m_transform->m_degrees + (dt * 10)), glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 
 	bool init() override {
