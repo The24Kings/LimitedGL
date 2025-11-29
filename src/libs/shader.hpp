@@ -3,111 +3,12 @@
 
 #include <GLEW/glew.h>
 #include <stdexcept>
-#include <iterator>
-#include <fstream>
 #include <vector>
 #include <string>
 #include <cstdio>
 
 #include "scolor.hpp"
-
-constexpr auto BUFFER_SIZE = 1024;
-
-class shader_source {
-public:
-	GLuint m_handle;
-	GLuint m_type;
-	const char* m_source;
-	char m_error[BUFFER_SIZE];
-
-	GLint m_isCompiled;
-	
-	//TODO: Add the shader vertex attributes here rather than in the material
-	//TODO: change this to some kind of compiler to read #include statements in the shader (i.e. https://github.com/HorseTrain/antworld/blob/main/antworld/assets/shaders/stl/shared_shader_data.h)
-
-	// Allow shader access to private class
-	friend class shader;
-
-	/**
-	* @brief Construct and compile the provided shader
-	*/
-	shader_source(GLuint shader_handle, GLuint type, const char* source) : m_handle(-1), m_type(type), m_source(source), m_isCompiled(GL_FALSE) {
-		memset(m_error, 0, BUFFER_SIZE);
-
-		this->compile(shader_handle);
-	}
-
-	~shader_source() {
-		if (this->m_handle != -1) { glDeleteShader(this->m_handle); }
-	}
-
-private:
-	/**
-	* @brief Load shader source from filepath
-	* 
-	* @returns bool Returns true if loading was successful, false on failure
-	*/
-	bool load() { 
-		std::ifstream input_file(this->m_source, std::ios::binary);
-		if (!input_file.is_open()) {
-			fprintf(stderr, RED("Failed to open file %s\n").c_str(), this->m_source);
-			return false;
-		}
-
-		// Read file into std::string
-		std::string s_data((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
-		input_file.close();
-
-		if (s_data.empty()) {
-			fprintf(stderr, RED("File %s is empty or unreadable: %lld bytes\n").c_str(), this->m_source, s_data.size());
-			return false;
-		}
-
-		if (s_data.size() > (1024 * 1024)) {
-			fprintf(stderr, RED("File %s is too large (Larger than 1MB): %lld bytes\n").c_str(), this->m_source, s_data.size());
-			return false;
-		}
-
-		printf(YELLOW("Read %zu bytes from %s\n").c_str(), s_data.size(), this->m_source);
-
-		// Pass to OpenGL
-		const char* buffer = s_data.c_str();
-		glShaderSource(this->m_handle, 1, &buffer, NULL);
-
-		return true;
-	} // load
-
-	/**
-	* @brief Create a shader source
-	*
-	* @return The shader source, nullptr on fail
-	*/
-	void compile(GLuint shader_handle) {
-		if (!this->m_source)
-			return;
-
-		this->m_handle = glCreateShader(this->m_type);
-
-		if (!load()) {
-			fprintf(stderr, RED("Failed to read shader source from %s\n").c_str(), this->m_source);
-			return;
-		}
-
-		// Compile
-		glCompileShader(this->m_handle);
-		glGetShaderInfoLog(this->m_handle, BUFFER_SIZE, NULL, this->m_error);
-		glGetShaderiv(this->m_handle, GL_COMPILE_STATUS, &this->m_isCompiled);
-
-		if (!this->m_isCompiled) {
-			fprintf(stderr, RED("Compile Failed: %s\n").c_str(), this->m_error);
-			return;
-		}
-
-		fprintf(stdout, GREEN("Compile Success\n").c_str());
-
-		glAttachShader(shader_handle, this->m_handle);
-	}
-}; // compile
+#include "shader_source.hpp"
 
 class shader {
 public:
@@ -128,35 +29,23 @@ public:
 		glDeleteProgram(this->m_handle);
 	}
 
+	shader(shader&) = delete; // No copy constructor
+	shader& operator=(const shader&) = delete; // No copy assignment
+
 	/**
 	* @brief Attach a shader source to the shader program
 	*/
-	void add(GLuint type, const char* filepath) {
-		auto _ = shader_source(this->m_handle, type, filepath);
-	} // add
+	void add(GLuint type, const char* filepath);
 
 	/**
 	* @brief Link the shader to the GPU
 	*/
-	void link() {
-		// Link the program
-		glLinkProgram(this->m_handle);
-		glGetProgramiv(this->m_handle, GL_LINK_STATUS, &this->m_isLinked);
-
-		if (!this->m_isLinked) {
-			fprintf(stderr, RED("Link Failed\n").c_str());
-			return;
-		}
-
-		printf(GREEN("Link Success\n").c_str());
-	} // link
+	void link();
 
 	/**
 	* @brief
 	*/
-	void use() const {
-		glUseProgram(m_handle);
-	} // use
+	void use() const;
 }; // shader
 
 #endif // _COMPLILE_SHADERS_HPP

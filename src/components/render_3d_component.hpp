@@ -2,7 +2,6 @@
 #define _RENDER_3D_COMPONENT_HPP
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 #include "component_base.hpp"
 #include "shader.hpp"

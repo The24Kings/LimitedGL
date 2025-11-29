@@ -20,6 +20,7 @@ struct object {
 	}
 
 	object(object&) = delete; // No copy constructor
+	object& operator=(const object&) = delete; // No copy assignment
 
 	virtual bool init() { return true; }
 	virtual void deinit() {}

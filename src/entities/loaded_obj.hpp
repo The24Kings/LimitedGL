@@ -64,10 +64,10 @@ public:
 		// Set attribute locations
 		GLuint s_handle = m_render->m_mat->m_shader->m_handle;
 
-		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::VERTEX), glGetAttribLocation(s_handle, vertexAttr(vertex_attr::VERTEX)));
-		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::COLOR), glGetAttribLocation(s_handle, vertexAttr(vertex_attr::COLOR)));
-		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::TEXCOORD), glGetAttribLocation(s_handle, vertexAttr(vertex_attr::TEXCOORD)));
-		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::NORMAL), glGetAttribLocation(s_handle, vertexAttr(vertex_attr::NORMAL)));
+		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::VERTEX));
+		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::COLOR));
+		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::TEXCOORD));
+		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::NORMAL));
 
 		return true;
 	} // init

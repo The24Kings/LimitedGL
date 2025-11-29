@@ -154,6 +154,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="include\tiny_obj_loader.h" />
+    <ClCompile Include="src\libs\material.cpp" />
+    <ClCompile Include="src\libs\mesh.cpp" />
+    <ClCompile Include="src\libs\shader.cpp" />
+    <ClCompile Include="src\libs\shader_source.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\libs\object.cpp" />
     <ClCompile Include="include\std_image.cpp" />
@@ -176,6 +180,7 @@
     <ClInclude Include="include\scolor.hpp" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="src\entities\crosshair.hpp" />
+    <ClInclude Include="src\libs\shader_source.hpp" />
     <ClInclude Include="src\libs\texture.hpp" />
     <ClInclude Include="src\libs\uniform.hpp" />
     <ClInclude Include="src\libs\vertex.hpp" />

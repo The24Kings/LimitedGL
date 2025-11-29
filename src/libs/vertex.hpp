@@ -3,7 +3,6 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/hash.hpp>
-#include <GLEW/glew.h>
 
 struct vertex {
 	glm::vec3 m_pos;
