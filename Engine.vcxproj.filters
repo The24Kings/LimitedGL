@@ -18,63 +18,60 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\tiny_object_loader.cc">
+    <ClCompile Include="include\tiny_object_loader.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\std_image.cpp">
+    <ClCompile Include="include\std_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="include\tiny_obj_loader.h">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\transform_component.cpp">
+    <ClCompile Include="src\components\transform_component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\camera.cpp">
+    <ClCompile Include="src\libs\object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\texture.cpp">
+    <ClCompile Include="src\libs\texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="libs\shader.hpp">
+    <ClInclude Include="src\libs\shader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\object.hpp">
+    <ClInclude Include="src\libs\object.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="entities\loaded_obj.hpp">
+    <ClInclude Include="src\entities\loaded_obj.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="entities\crosshair.hpp">
+    <ClInclude Include="src\entities\crosshair.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="entities\player.hpp">
+    <ClInclude Include="src\entities\player.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="entities\camera.hpp">
+    <ClInclude Include="src\entities\camera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="components\component_base.hpp">
+    <ClInclude Include="src\components\component_base.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="components\render_2d_component.hpp">
+    <ClInclude Include="src\components\render_2d_component.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="components\render_3d_component.hpp">
+    <ClInclude Include="src\components\render_3d_component.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="components\transform_component.hpp">
+    <ClInclude Include="src\components\transform_component.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\material.hpp">
+    <ClInclude Include="src\libs\material.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\mesh.hpp">
+    <ClInclude Include="src\libs\mesh.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\scolor.hpp">
@@ -83,13 +80,13 @@
     <ClInclude Include="include\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\texture.hpp">
+    <ClInclude Include="src\libs\texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\uniform.hpp">
+    <ClInclude Include="src\libs\uniform.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\vertex.hpp">
+    <ClInclude Include="src\libs\vertex.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

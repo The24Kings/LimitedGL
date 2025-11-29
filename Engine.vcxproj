@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLM_ENABLE_EXPERIMENTAL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)libs;$(ProjectDir)components;$(ProjectDir)entities</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDirinclude);$(ProjectDir)src\libs;$(ProjectDir)src\components;$(ProjectDir)src\entities</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -141,7 +141,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)libs;$(ProjectDir)components;$(ProjectDir)entities</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDirinclude);$(ProjectDir)src\libs;$(ProjectDir)src\components;$(ProjectDir)src\entities</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -149,36 +149,36 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;$(SolutionDir)include\GLEW\glew32s.lib;$(SolutionDir)include\glfw\glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;$(SolutionDir)include\GLEW\glew32.lib;$(SolutionDir)include\glfw\glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="include\tiny_obj_loader.h" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\object.cpp" />
-    <ClCompile Include="src\std_image.cpp" />
-    <ClCompile Include="src\texture.cpp" />
-    <ClCompile Include="src\tiny_object_loader.cc" />
-    <ClCompile Include="src\transform_component.cpp" />
+    <ClCompile Include="src\libs\object.cpp" />
+    <ClCompile Include="include\std_image.cpp" />
+    <ClCompile Include="src\libs\texture.cpp" />
+    <ClCompile Include="include\tiny_object_loader.cc" />
+    <ClCompile Include="src\components\transform_component.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="components\component_base.hpp" />
-    <ClInclude Include="components\render_2d_component.hpp" />
-    <ClInclude Include="components\render_3d_component.hpp" />
-    <ClInclude Include="components\transform_component.hpp" />
-    <ClInclude Include="entities\loaded_obj.hpp" />
-    <ClInclude Include="entities\camera.hpp" />
-    <ClInclude Include="libs\material.hpp" />
-    <ClInclude Include="libs\mesh.hpp" />
-    <ClInclude Include="libs\shader.hpp" />
-    <ClInclude Include="libs\object.hpp" />
-    <ClInclude Include="entities\player.hpp" />
+    <ClInclude Include="src\components\component_base.hpp" />
+    <ClInclude Include="src\components\render_2d_component.hpp" />
+    <ClInclude Include="src\components\render_3d_component.hpp" />
+    <ClInclude Include="src\components\transform_component.hpp" />
+    <ClInclude Include="src\entities\loaded_obj.hpp" />
+    <ClInclude Include="src\entities\camera.hpp" />
+    <ClInclude Include="src\libs\material.hpp" />
+    <ClInclude Include="src\libs\mesh.hpp" />
+    <ClInclude Include="src\libs\shader.hpp" />
+    <ClInclude Include="src\libs\object.hpp" />
+    <ClInclude Include="src\entities\player.hpp" />
     <ClInclude Include="include\scolor.hpp" />
     <ClInclude Include="include\stb_image.h" />
-    <ClInclude Include="entities\crosshair.hpp" />
-    <ClInclude Include="libs\texture.hpp" />
-    <ClInclude Include="libs\uniform.hpp" />
-    <ClInclude Include="libs\vertex.hpp" />
+    <ClInclude Include="src\entities\crosshair.hpp" />
+    <ClInclude Include="src\libs\texture.hpp" />
+    <ClInclude Include="src\libs\uniform.hpp" />
+    <ClInclude Include="src\libs\vertex.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="objects\cube.mtl">
