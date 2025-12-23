@@ -35,6 +35,6 @@ void material::use() {
 			else
 				throw std::invalid_argument("Unsupported uniform type");
 
-			}, u.value);
+		}, u.value);
 	}
 }

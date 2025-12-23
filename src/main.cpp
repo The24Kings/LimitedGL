@@ -148,8 +148,10 @@ int main(void) {
         vp = projection * view;
 
 		for (object* obj : objects) {
-			// Update the VP matrix for render components
+			// Update render components static variables
 			render_3d_component::vp = vp;
+            render_3d_component::lightPos = glm::vec3(2.0f, 25.0f, 25.0f);
+            render_3d_component::cameraPos = main_camera.m_transform->position;
 
             obj->update(deltaTime);
 		}
@@ -224,6 +226,9 @@ static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) 
 	main_frustum.cameraZoom(yoffset);
 } // scroll_callback
 
+/**
+* @brief Callback to handle mouse movement
+*/
 static void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	// Re-center the mouse
 	float center_x = SCRN_WIDTH / 2.0f;

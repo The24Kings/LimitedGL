@@ -15,6 +15,8 @@ public:
 	mesh* m_mesh;
 
 	inline static glm::mat4 vp;
+	inline static glm::vec3 lightPos;
+	inline static glm::vec3 cameraPos;
 
 	render_3d_component(shader* linked_shader, texture* linked_texture) {
 		this->m_mat = new material(linked_shader, linked_texture);
@@ -30,7 +32,9 @@ public:
 		m_mat->set_uniform("vp", vp);
 
 		m_mat->set_uniform("ambient_strength", 0.2f);
-		m_mat->set_uniform("light_pos", glm::vec3(2.0f, 25.0f, 25.0f));
+		m_mat->set_uniform("specular_strength", 0.5f);
+		m_mat->set_uniform("light_pos", lightPos); //glm::vec3(2.0f, 25.0f, 25.0f)
+		m_mat->set_uniform("view_pos", cameraPos);
 
 		render();
 	}

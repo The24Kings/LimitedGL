@@ -18,7 +18,8 @@ void main(void) {
 
 	frag_color = in_color;
 	frag_texCoord = in_texCoord;
-	frag_normal = mat3(transpose(inverse(model))) * in_normal; // scaled model fixes
+	//frag_normal = mat3(transpose(inverse(model))) * in_normal; // TODO: calculate the normal matrix for scaled models on the CPU and send it to the shaders via a uniform before drawing (just like the model matrix).
+	frag_normal = in_normal;
 
 	gl_Position = vp * vec4(frag_pos, 1.0); // mvp is reveresed because matrix mult
 }
