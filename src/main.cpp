@@ -1,8 +1,12 @@
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 #include <glm/glm.hpp>
 #include <GLEW/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glfw/glfw3.h>
 #include <cstdio>
+#include <thread>
 #include <vector>
 #include <string>
 #define _USE_MATH_DEFINES
@@ -32,18 +36,14 @@ frustum main_frustum = frustum(65.0f, 0.1f, 100.0f);
 camera main_camera = camera();
 player main_player = player();
 
+bool enable_mouse = false;
+
 /* Frame Data */
 
 double deltaTime = 0.0;
 double lastFrame = 0.0;
 
 /* Call Backs */
-
-static void resize_callback(GLFWwindow* window, int width, int height);
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-static void glfw_error_callback(int error, const char* description);
-static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 void GLAPIENTRY
 MessageCallback(
@@ -55,6 +55,11 @@ MessageCallback(
     const GLchar* message,
     const void* userParam
 );
+static void resize_callback(GLFWwindow* window, int width, int height);
+static void glfw_error_callback(int error, const char* description);
+static void keyboard_input(GLFWwindow* window);
+static void scroll_input(GLFWwindow* window);
+static void mouse_input(GLFWwindow* window);
 
 int main(void) {
     /* Initialize GLFW */
@@ -64,6 +69,7 @@ int main(void) {
     glfwSetErrorCallback(glfw_error_callback);
 
     /* Create a windowed mode window and its OpenGL context */
+    float main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor());
     GLFWwindow* window = glfwCreateWindow(SCRN_WIDTH, SCRN_HEIGHT, "LimitedGL Engine", NULL, NULL);
 
     if (!window) {
@@ -75,13 +81,46 @@ int main(void) {
     /* Initialize GLFW */
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(1); // V-Sync
     glewInit();
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+
+    if (!enable_mouse)
+        ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
+    else
+        ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // Setup scaling
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.ScaleAllSizes(main_scale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
+    style.FontScaleDpi = main_scale;        // Set initial font scale. (using io.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
+
+    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init();
+
+    // Imgui States
+    ImVec4 background = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
 
     /* Callbacks */
     glfwSetFramebufferSizeCallback(window, resize_callback);
-	glfwSetKeyCallback(window, key_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
 	glDebugMessageCallback(MessageCallback, 0);
 
     /* Objects */
@@ -117,6 +156,12 @@ int main(void) {
     glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DEBUG_OUTPUT);
 
+    /* Threads */
+    std::thread keyboard_input_thread(keyboard_input, window);
+    std::thread mouse_movement_thread(mouse_input, window);
+    std::thread scroll_thread(scroll_input, window);
+
+    /* Main Loop */
     glm::mat4 view = glm::identity<glm::mat4>();
     glm::mat4 projection = glm::identity<glm::mat4>();
     glm::mat4 vp = glm::identity<glm::mat4>();
@@ -128,10 +173,14 @@ int main(void) {
         glfwPollEvents();
 
 		/* Handle minimized window */
-        if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0) { continue; }
+        if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0)
+        {
+            ImGui_ImplGlfw_Sleep(10);
+            continue;
+        }
 
 		/* Render Main */
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(background.x * background.w, background.y * background.w, background.z * background.w, background.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Player Movement
@@ -156,6 +205,38 @@ int main(void) {
             obj->update(deltaTime);
 		}
 
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        {
+            static float f = 0.0f;
+            static int counter = 0;
+
+            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+            ImGui::ColorEdit3("", (float*)&background); // Edit 3 floats representing a color
+
+            ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+            ImGui::End();
+        }
+
+        // Imgui Render
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        // Update and Render additional Platform Windows
+        // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+        //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
+
 		/* Swap front and back buffers */
         glfwSwapBuffers(window);
 
@@ -166,15 +247,20 @@ int main(void) {
 	} // Game Loop
 
 	/* Deinitialize objects */
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     glfwDestroyWindow(window);
     glfwTerminate();
 
+    /* Terminate Threads */
+    keyboard_input_thread.join();
+    mouse_movement_thread.join();
+    scroll_thread.join();
+
     return 0;
 } // main
-
-static void glfw_error_callback(int error, const char* description) {
-    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
-}
 
 void GLAPIENTRY
 MessageCallback(
@@ -202,39 +288,81 @@ static void resize_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 } // resize_callback
 
+static void glfw_error_callback(int error, const char* description) {
+    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+}
+
 /**
 * @brief Callback to handle key presses
 */
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
+static void keyboard_input(GLFWwindow* window) {
+    ImGuiIO& io = ImGui::GetIO();
+
+    while (!glfwWindowShouldClose(window)) {
+        if (io.WantCaptureKeyboard) {
+            continue;
+        }
+
+        if (ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+            glfwSetWindowShouldClose(window, true);
+        }
+
+        if (ImGui::IsKeyPressed(ImGuiKey_F1)) {
+            if (enable_mouse) // Disable
+                ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
+            else // Enable
+                ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
+
+            enable_mouse = !enable_mouse;
+        }
+
+        // Player Movement
+        main_player.keys.w = ImGui::IsKeyDown(ImGuiKey_W);
+        main_player.keys.a = ImGui::IsKeyDown(ImGuiKey_A);
+        main_player.keys.s = ImGui::IsKeyDown(ImGuiKey_S);
+        main_player.keys.d = ImGui::IsKeyDown(ImGuiKey_D);
+        main_player.keys.shift = ImGui::IsKeyDown(ImGuiKey_LeftShift) || ImGui::IsKeyDown(ImGuiKey_RightShift);
+        main_player.keys.space = ImGui::IsKeyDown(ImGuiKey_Space);
     }
-
-	// Player Movement
-    main_player.keys.w = glfwGetKey(window, GLFW_KEY_W);
-    main_player.keys.s = glfwGetKey(window, GLFW_KEY_S);
-    main_player.keys.a = glfwGetKey(window, GLFW_KEY_A);
-    main_player.keys.d = glfwGetKey(window, GLFW_KEY_D);
-	main_player.keys.shift = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT);
-	main_player.keys.space = glfwGetKey(window, GLFW_KEY_SPACE);
-} // key_callback
-
-/**
-* @brief Callback to handle mouse scroll events
-*/
-static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	main_frustum.cameraZoom(yoffset);
-} // scroll_callback
+} // keyboard_input
 
 /**
 * @brief Callback to handle mouse movement
 */
-static void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-	// Re-center the mouse
-	float center_x = SCRN_WIDTH / 2.0f;
-	float center_y = SCRN_HEIGHT / 2.0f;
+static void mouse_input(GLFWwindow* window) { // FIXME: Isn't functioning right now, unable to clamp mouse to center and movement is really fast
+    ImGuiIO& io = ImGui::GetIO();
 
-    glfwSetCursorPos(window, center_x, center_y);
+    while (!glfwWindowShouldClose(window)) {
+        if (io.WantCaptureMouse) {
+            continue;
+        }
 
-	main_camera.pointCamera((float)xpos, (float)ypos, center_x, center_y, deltaTime);
-} // mouse_callback
+        if (enable_mouse) {
+            continue;
+        }
+
+        // Re-center the mouse
+        float center_x = SCRN_WIDTH / 2.0f;
+        float center_y = SCRN_HEIGHT / 2.0f;
+
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        glfwSetCursorPos(window, center_x, center_y);
+
+        main_camera.pointCamera(io.MouseDelta.x, io.MouseDelta.y, center_x, center_y, deltaTime);
+    }
+} // mouse_input
+
+/**
+* @brief Callback to handle mouse scroll events
+*/
+static void scroll_input(GLFWwindow* window) {
+    ImGuiIO& io = ImGui::GetIO();
+
+    while (!glfwWindowShouldClose(window)) {
+        if (ImGui::GetIO().WantCaptureMouse) {
+            continue;
+        }
+
+        main_frustum.cameraZoom(io.MouseWheel);
+    }
+} // scroll_input

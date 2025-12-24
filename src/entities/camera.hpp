@@ -13,7 +13,8 @@ struct frustum {
 	frustum(float fov, float np, float fp) : fovDegrees(fov), near_plane(np), far_plane(fp) {}
 
 	void cameraZoom(float yoffset) {
-		fovDegrees -= yoffset;
+		float scroll_sensitivity = 20000.0f;
+		fovDegrees -= yoffset / scroll_sensitivity;
 
 		if (fovDegrees < 1.0f)
 			fovDegrees = 1.0f;
@@ -26,7 +27,7 @@ struct camera : public object {
 	float pitch;
 	float yaw;
 
-	float mouseSensitivity = 0.05f;
+	float mouseSensitivity = 0.000005f;
 
 	transform_component* m_transform;
 
@@ -71,11 +72,11 @@ struct camera : public object {
 	*/
 	void pointCamera(float xpos, float ypos, float center_x, float center_y, float deltaTime, bool constrainPitch = true) {
 		// Move the camera based on mouse movement
-		float dx = xpos - center_x;
-		float dy = ypos - center_y;
+		float dx = (xpos * mouseSensitivity) -center_x;
+		float dy = (ypos * mouseSensitivity) -center_y;
 
-		xpos *= dx * mouseSensitivity * deltaTime;
-		ypos *= dy * mouseSensitivity * deltaTime;
+		xpos *= dx * deltaTime;
+		ypos *= dy * deltaTime;
 		yaw += xpos;
 		pitch += ypos;
 

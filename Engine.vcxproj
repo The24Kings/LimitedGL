@@ -122,9 +122,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>GLM_ENABLE_EXPERIMENTAL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLM_ENABLE_EXPERIMENTAL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDirinclude);$(ProjectDir)src\libs;$(ProjectDir)src\components;$(ProjectDir)src\entities</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDirinclude);$(ProjectDir)src\libs;$(ProjectDir)src\components;$(ProjectDir)src\entities;$(ProjectDir)\include\imgui;$(ProjectDir)\include\imgui\backends</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -153,6 +153,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="include\imgui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="include\imgui\imgui.cpp" />
+    <ClCompile Include="include\imgui\imgui_demo.cpp" />
+    <ClCompile Include="include\imgui\imgui_draw.cpp" />
+    <ClCompile Include="include\imgui\imgui_tables.cpp" />
+    <ClCompile Include="include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="include\imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="include\tiny_obj_loader.h" />
     <ClCompile Include="src\libs\material.cpp" />
     <ClCompile Include="src\libs\mesh.cpp" />
@@ -166,6 +174,17 @@
     <ClCompile Include="src\components\transform_component.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\imgui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="include\imgui\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="include\imgui\backends\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="include\imgui\imconfig.h" />
+    <ClInclude Include="include\imgui\imgui.h" />
+    <ClInclude Include="include\imgui\imgui_internal.h" />
+    <ClInclude Include="include\imgui\imstb_rectpack.h" />
+    <ClInclude Include="include\imgui\imstb_textedit.h" />
+    <ClInclude Include="include\imgui\imstb_truetype.h" />
+    <ClInclude Include="include\imgui\misc\cpp\imgui_stdlib.h" />
+    <ClInclude Include="include\imgui\misc\single_file\imgui_single_file.h" />
     <ClInclude Include="src\components\component_base.hpp" />
     <ClInclude Include="src\components\render_2d_component.hpp" />
     <ClInclude Include="src\components\render_3d_component.hpp" />
@@ -186,6 +205,9 @@
     <ClInclude Include="src\libs\vertex.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="include\imgui\.editorconfig" />
+    <None Include="include\imgui\.gitattributes" />
+    <None Include="include\imgui\.gitignore" />
     <None Include="objects\cube.mtl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -238,6 +260,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="include\imgui\LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
