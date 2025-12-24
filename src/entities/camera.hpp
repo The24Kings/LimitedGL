@@ -26,7 +26,7 @@ struct camera : public object {
 	float pitch;
 	float yaw;
 
-	float mouseSensitivity = 0.05f;
+	float mouseSensitivity = 0.08f;
 
 	transform_component* m_transform;
 

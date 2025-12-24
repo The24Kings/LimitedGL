@@ -39,7 +39,7 @@ public:
 		render();
 	}
 
-	void render() {
+	void render() { //FIXME: Something wrong happens when rendering multiple objects
 		m_mat->use();
 		m_mesh->draw(m_mat);
 	}

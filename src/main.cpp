@@ -16,7 +16,8 @@
 #include "object.hpp"
 
 #include "render_3d_component.hpp"
-#include "loaded_obj.hpp"
+#include "earth.hpp"
+#include "cube.hpp"
 //#include "crosshair.hpp"
 
 /* Window Data */
@@ -85,24 +86,27 @@ int main(void) {
 	glDebugMessageCallback(MessageCallback, 0);
 
     /* Objects */
-    main_camera.m_transform->position = glm::vec3(0.0f, 0.0f, 30.0f);
+    main_camera.m_transform->position = glm::vec3(0.0f, 0.0f, 10.0f);
     objects.push_back(&main_camera);
 
-    shader* loaded_obj_shader = new shader();
-    loaded_obj_shader->add(GL_VERTEX_SHADER, "shaders/loaded_obj_vertex_shader.glsl");
-    loaded_obj_shader->add(GL_FRAGMENT_SHADER, "shaders/loaded_obj_fragment_shader.glsl");
-    loaded_obj_shader->link();
+    shader* object_shader = new shader();
+    object_shader->add(GL_VERTEX_SHADER, "src/shaders/loaded_obj_vertex_shader.glsl");
+    object_shader->add(GL_FRAGMENT_SHADER, "src/shaders/loaded_obj_fragment_shader.glsl");
+    object_shader->link();
 
-    shader* crosshair_shader = new shader();
-    crosshair_shader->add(GL_VERTEX_SHADER, "shaders/crosshair_vertex_shader.glsl");
-    crosshair_shader->add(GL_FRAGMENT_SHADER, "shaders/crosshair_fragment_shader.glsl");
+    /*shader* crosshair_shader = new shader();
+    crosshair_shader->add(GL_VERTEX_SHADER, "src/shaders/crosshair_vertex_shader.glsl");
+    crosshair_shader->add(GL_FRAGMENT_SHADER, "src/shaders/crosshair_fragment_shader.glsl");
     crosshair_shader->link();
 
-    loaded_obj obj = loaded_obj("objects/earth.obj", "objects/textures/earth albedo.jpg", loaded_obj_shader);
-    objects.push_back(&obj);
+    crosshair cross = crosshair(crosshair_shader);
+    objects.push_back(&cross);*/
 
-    //crosshair cross = crosshair(crosshair_shader);
-    //objects.push_back(&cross);
+    earth planet = earth(object_shader);
+    //objects.push_back(&planet);
+
+    cube bricks = cube(object_shader);
+    objects.push_back(&bricks);
 
 	/* Initialize objects */
 	for (object* obj : objects) {
@@ -176,6 +180,19 @@ static void glfw_error_callback(int error, const char* description) {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
+static GLchar* getErrorString(GLenum errorCode) {
+    switch (errorCode) {
+        case GL_INVALID_VALUE:                  return (GLchar*)"Invalid Value";
+        case GL_INVALID_ENUM:                   return (GLchar*)"Invalid Enum";
+        case GL_INVALID_OPERATION:              return (GLchar*)"Invalid Operation";
+        case GL_STACK_OVERFLOW:                 return (GLchar*)"Stack Overflow";
+        case GL_STACK_UNDERFLOW:                return (GLchar*)"Stack Underflow";
+        case GL_OUT_OF_MEMORY:                  return (GLchar*)"Out of Memory";
+        case GL_INVALID_FRAMEBUFFER_OPERATION:  return (GLchar*)"Invalid Frame Buffer";
+        default:                                return (GLchar*)"Unknown";
+    }
+}
+
 void GLAPIENTRY
 MessageCallback(
     GLenum source,
@@ -186,8 +203,10 @@ MessageCallback(
     const GLchar* message,
     const void* userParam
 ) {
+    if (source == GL_NO_ERROR) return;
+
     fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+        getErrorString(source),
         type, severity, message
     );
 }

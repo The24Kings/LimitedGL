@@ -24,7 +24,6 @@ public:
 	std::string objBaseDir;
 
 	render_3d_component* m_render;
-	transform_component* m_transform;
 
 	/**
 	* Create a new loaded_obj object
@@ -37,15 +36,6 @@ public:
 		if (!linked_shader->m_isLinked) { throw std::invalid_argument("You must link the shader before using it"); }
 
 		m_render = (render_3d_component*)addComponent(new render_3d_component(linked_shader, new texture()));
-		m_transform = (transform_component*)addComponent(new transform_component());
-	}
-
-	void update(float dt) override {
-		for (auto c : m_components) {
-			c->update(dt);
-		}
-
-		m_transform->rotation = glm::angleAxis(glm::radians(m_transform->m_degrees + (dt * 10)), glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 
 	bool init() override {
@@ -62,8 +52,6 @@ public:
 		}
 
 		// Set attribute locations
-		GLuint s_handle = m_render->m_mat->m_shader->m_handle;
-
 		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::VERTEX));
 		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::COLOR));
 		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::TEXCOORD));

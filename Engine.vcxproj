@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLM_ENABLE_EXPERIMENTAL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDirinclude);$(ProjectDir)src\libs;$(ProjectDir)src\components;$(ProjectDir)src\entities</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDirinclude);$(ProjectDir)src\libs;$(ProjectDir)src\components;$(ProjectDir)src\entities;$(ProjectDir)src\game</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -172,6 +172,8 @@
     <ClInclude Include="src\components\transform_component.hpp" />
     <ClInclude Include="src\entities\loaded_obj.hpp" />
     <ClInclude Include="src\entities\camera.hpp" />
+    <ClInclude Include="src\game\cube.hpp" />
+    <ClInclude Include="src\game\earth.hpp" />
     <ClInclude Include="src\libs\material.hpp" />
     <ClInclude Include="src\libs\mesh.hpp" />
     <ClInclude Include="src\libs\shader.hpp" />
@@ -186,21 +188,21 @@
     <ClInclude Include="src\libs\vertex.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="objects\cube.mtl">
+    <None Include="obj\cube.mtl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
-    <None Include="shaders\crosshair_fragment_shader.glsl" />
-    <None Include="shaders\crosshair_vertex_shader.glsl" />
-    <None Include="shaders\fragment_shader.glsl" />
-    <None Include="shaders\loaded_obj_fragment_shader.glsl" />
-    <None Include="shaders\loaded_obj_vertex_shader.glsl" />
-    <None Include="shaders\vertex_shader.glsl" />
+    <None Include="src\shaders\crosshair_fragment_shader.glsl" />
+    <None Include="src\shaders\crosshair_vertex_shader.glsl" />
+    <None Include="src\shaders\fragment_shader.glsl" />
+    <None Include="src\shaders\loaded_obj_fragment_shader.glsl" />
+    <None Include="src\shaders\loaded_obj_vertex_shader.glsl" />
+    <None Include="src\shaders\vertex_shader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="objects\textures\brick.jpg" />
+    <Image Include="obj\textures\brick.jpg" />
     <Image Include="objects\textures\shooting_gallery\door_model_01_0.png" />
     <Image Include="objects\textures\shooting_gallery\sh_mz_hari_01_0.png" />
     <Image Include="objects\textures\shooting_gallery\sh_mz_kabe_01_1500.png" />
@@ -232,7 +234,7 @@
     <Image Include="objects\textures\shooting_gallery\z2_tannsin_mode_2A00.png.001.png" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="objects\cube.obj">
+    <Object Include="obj\cube.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
