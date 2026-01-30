@@ -122,7 +122,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>GLM_ENABLE_EXPERIMENTAL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLM_ENABLE_EXPERIMENTAL;GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDirinclude);$(ProjectDir)src\libs;$(ProjectDir)src\components;$(ProjectDir)src\entities;$(ProjectDir)src\game</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -130,7 +130,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;$(SolutionDir)include\GLEW\glew32.lib;$(SolutionDir)include\glfw\glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;$(SolutionDir)include\GLEW\glew32s.lib;$(SolutionDir)include\glfw\glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -202,7 +202,6 @@
     <None Include="src\shaders\vertex_shader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="obj\textures\brick.jpg" />
     <Image Include="objects\textures\shooting_gallery\door_model_01_0.png" />
     <Image Include="objects\textures\shooting_gallery\sh_mz_hari_01_0.png" />
     <Image Include="objects\textures\shooting_gallery\sh_mz_kabe_01_1500.png" />

@@ -36,7 +36,7 @@ public:
 		m_render->m_mesh->load_mesh(vertices, 12);
 
 		// Set attribute locations
-		m_render->m_mat->set_attribute("in_vertex", 0);
+		m_render->m_mat->set_attribute(vertexAttr(vertex_attr::VERTEX));
 
 		return true;
 	}

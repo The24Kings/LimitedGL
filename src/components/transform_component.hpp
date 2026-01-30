@@ -2,7 +2,7 @@
 #define _TRANSFORM_COMPONENT_HPP
 
 #include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include "component_base.hpp"
 
@@ -17,8 +17,6 @@ struct transform_component : public component { // 128 bytes
 
 	float m_degrees = 0.0f;
 
-	glm::mat4 model = glm::identity<glm::mat4>();
-
 	transform_component() : position(0.0f), rotation(glm::identity<glm::quat>()), scale(1.0f) {}
 
 	void update(float dt) override;
@@ -28,6 +26,18 @@ struct transform_component : public component { // 128 bytes
 	*/
 	inline glm::mat4 getPositionMatrix() const {
 		return glm::translate(glm::mat4(1.0f), -position); // Note the negative sign for moving the world opposite to the camera position
+	}
+
+	inline glm::mat4 getRotationMatrix() const {
+		return glm::mat4_cast(rotation);
+	}
+
+	inline glm::mat4 getScaleMatrix() const {
+		return glm::scale(glm::mat4(1.0f), scale);
+	}
+
+	inline glm::mat4 getModelMatrix() const {
+		return glm::translate(glm::mat4(1.0f), position) * getRotationMatrix() * getScaleMatrix();
 	}
 
 	void moveForward(float speed, float deltaTime) {

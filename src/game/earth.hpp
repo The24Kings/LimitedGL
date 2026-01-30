@@ -23,16 +23,20 @@ public:
 	*/
 	earth(shader* linked_shader) : loaded_obj("obj/earth.obj", "obj/textures/earth.jpg", linked_shader) {
 		m_transform = (transform_component*)addComponent(new transform_component());
-
-		this->m_transform->rotation = glm::rotate(glm::identity<glm::quat>(), glm::radians(-90.0f), glm::vec3(1, 0, 0));
 	}
 
 	void update(float dt) override {
+		// Accumulate rotation over time
+		m_transform->m_degrees += dt * 10.0f;
+
+		// Apply initial tilt (-90° on X) then spin around Z
+		glm::quat tilt = glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0));
+		glm::quat spin = glm::angleAxis(glm::radians(m_transform->m_degrees), glm::vec3(0, 1, 0));
+		m_transform->rotation = spin * tilt;
+
 		for (auto c : m_components) {
 			c->update(dt);
 		}
-
-		m_transform->rotation = glm::angleAxis(glm::radians(m_transform->m_degrees + (dt * 10)), glm::vec3(0, 0, 1));
 	}
 
 

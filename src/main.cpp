@@ -18,7 +18,7 @@
 #include "render_3d_component.hpp"
 #include "earth.hpp"
 #include "cube.hpp"
-//#include "crosshair.hpp"
+#include "crosshair.hpp"
 
 /* Window Data */
 
@@ -94,19 +94,23 @@ int main(void) {
     object_shader->add(GL_FRAGMENT_SHADER, "src/shaders/loaded_obj_fragment_shader.glsl");
     object_shader->link();
 
-    /*shader* crosshair_shader = new shader();
+    shader* crosshair_shader = new shader();
     crosshair_shader->add(GL_VERTEX_SHADER, "src/shaders/crosshair_vertex_shader.glsl");
     crosshair_shader->add(GL_FRAGMENT_SHADER, "src/shaders/crosshair_fragment_shader.glsl");
     crosshair_shader->link();
 
     crosshair cross = crosshair(crosshair_shader);
-    objects.push_back(&cross);*/
+    objects.push_back(&cross);
 
     earth planet = earth(object_shader);
-    //objects.push_back(&planet);
+    objects.push_back(&planet);
+
+    planet.m_transform->scale = glm::vec3(0.25f);
 
     cube bricks = cube(object_shader);
     objects.push_back(&bricks);
+
+    bricks.m_transform->position = glm::vec3(0.0, 5.0, 0.0);
 
 	/* Initialize objects */
 	for (object* obj : objects) {

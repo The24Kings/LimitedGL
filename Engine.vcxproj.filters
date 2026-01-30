@@ -104,20 +104,23 @@
     <ClInclude Include="src\libs\shader_source.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\game\cube.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game\earth.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\vertex_shader.glsl" />
-    <None Include="shaders\fragment_shader.glsl" />
-    <None Include="shaders\loaded_obj_fragment_shader.glsl" />
-    <None Include="shaders\loaded_obj_vertex_shader.glsl" />
-    <None Include="objects\cube.mtl" />
-    <None Include="shaders\crosshair_fragment_shader.glsl" />
-    <None Include="shaders\crosshair_vertex_shader.glsl" />
+    <None Include="obj\cube.mtl" />
+    <None Include="src\shaders\crosshair_fragment_shader.glsl" />
+    <None Include="src\shaders\crosshair_vertex_shader.glsl" />
+    <None Include="src\shaders\fragment_shader.glsl" />
+    <None Include="src\shaders\loaded_obj_fragment_shader.glsl" />
+    <None Include="src\shaders\loaded_obj_vertex_shader.glsl" />
+    <None Include="src\shaders\vertex_shader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="objects\textures\brick.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="objects\textures\shooting_gallery\door_model_01_0.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -207,6 +210,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="objects\cube.obj" />
+    <Object Include="obj\cube.obj" />
   </ItemGroup>
 </Project>

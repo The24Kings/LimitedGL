@@ -17,7 +17,7 @@ void mesh::draw(material* mat) {
 	}
 
 	// Rebind the buffers
-	glBindVertexArray(vbo);
+	glBindVertexArray(vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
 	glDrawElements(GL_TRIANGLES, (GLsizei)m_indices.size(), GL_UNSIGNED_INT, NULL);
